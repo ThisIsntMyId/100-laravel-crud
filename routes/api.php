@@ -32,6 +32,9 @@ Route::group(['middleware' => 'api'], function () {
     Route::apiResource('roles', 'RoleController')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_PERMISSION_MANAGE);
     Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_PERMISSION_MANAGE);
     Route::apiResource('permissions', 'PermissionController')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_PERMISSION_MANAGE);
+    
+    Route::apiResource('blocks', 'BlockController');
+
 
     // Fake APIs
     Route::get('/table/list', function () {
