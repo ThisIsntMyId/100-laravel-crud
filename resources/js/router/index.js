@@ -15,6 +15,7 @@ import Layout from '@/layout';
 /* Router for modules */
 import blocksRoutes from './modules/blocks';
 import sectionsRoutes from './modules/section';
+import errorRoutes from './modules/error';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -90,6 +91,7 @@ export const constantRoutes = [
 export const asyncRoutes = [
   blocksRoutes,
   sectionsRoutes,
+  errorRoutes,
   {
     path: 'external-link',
     component: Layout,
