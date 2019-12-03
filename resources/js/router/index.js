@@ -85,10 +85,10 @@ export const constantRoutes = [
       },
     ],
   },
-  blocksRoutes,
 ];
 
 export const asyncRoutes = [
+  blocksRoutes,
   sectionsRoutes,
   {
     path: 'external-link',
