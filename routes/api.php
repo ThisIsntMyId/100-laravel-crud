@@ -35,6 +35,7 @@ Route::group(['middleware' => 'api'], function () {
     
     Route::apiResource('blocks', 'BlockController');
     Route::apiResource('sections', 'SectionController');
+    Route::apiResource('pages', 'PageController');
 
 
     // Fake APIs

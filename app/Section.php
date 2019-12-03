@@ -12,4 +12,9 @@ class Section extends Model
     {
         return $this->hasMany('App\Block', 'section_code', 'code');
     }
+
+    public function page()
+    {
+        return $this->hasOne('App\Page', 'pageID', 'pageID');
+    }
 }
