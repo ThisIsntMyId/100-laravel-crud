@@ -33,13 +33,20 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_PERMISSION_MANAGE);
     Route::apiResource('permissions', 'PermissionController')->middleware('permission:' . \App\Laravue\Acl::PERMISSION_PERMISSION_MANAGE);
     
+    // BLocks
+    // Can give download link of all documents excel files from here only
+    // Infact can export excel files directly from here only for curent page or all. for selected
+        // ones need to provide from the frontend
     Route::post('blocks/upload-excel', 'BlockController@uploadExcel');
     Route::post('blocks/upload-csv', 'BlockController@uploadCsv');
-    Route::get('blocks/filter', 'BlockController@filter');
     Route::delete('blocks/delete-multiple', 'BlockController@deleteMultiple');
     Route::apiResource('blocks', 'BlockController');
     Route::apiResource('sections', 'SectionController');
     Route::apiResource('pages', 'PageController');
+
+    // Brands
+    Route::delete('brands/delete-multiple', 'BrandController@deleteMultiple');
+    Route::apiResource('brands', 'BrandController');
 
 
     // Fake APIs

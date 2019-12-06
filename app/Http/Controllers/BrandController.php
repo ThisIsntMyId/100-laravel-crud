@@ -2,23 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Block;
-use App\Imports\BlocksImport;
+use App\Brand;
 use Illuminate\Http\Request;
 
-class BlockController extends Controller
+class BrandController extends Controller
 {
     private function validateRequest(Request $request)
     {
+        $exists = Brand::where('slug', $request->slug)->exists();
+        $isUpdateQuery = (($request->method() == 'PUT') || ($request->method() == 'PATCH'));
         $validatedData = $request->validate([
-            "section_code" => 'required | exists:sections,code',
-            "language" => 'required | in:en,ar',
-            "title" => 'required',
-            "content" => 'nullable',
-            "image" => 'nullable',
-            "image_mobile" => 'nullable',
-            "link" => 'nullable',
-            "btn_title" => 'nullable',
+            "name" => 'required | json',
+            // "slug" => ['required','unique:brands,slug' . (($isUpdateQuery && $exists) ? ',' . $request->slug . ',slug': '')],
+            "slug" => ['nullable','unique:brands,slug'],
+            "description" => 'nullable | json',
+            "h1_tag" => 'nullable | json',
+            "h2_tag" => 'nullable | json',
+            "meta_title" => 'nullable | json',
+            "meta_desc" => 'nullable | json',
+            "meta_kw" => 'nullable | json',
+            "icon" => 'nullable | mimes:jpeg,bmp,png',
+            "header_img" => 'nullable | mimes:jpeg,bmp,png',
+            "recom_store" => 'nullable | json',
+            "override_stores" => 'required | boolean',
+            "visits" => 'required | integer',
+            "exclude_sitemap" => 'required | boolean',
+            "filter" => 'nullable | json',
+            "offers_count" => 'required | integer',
         ]);
         return $validatedData;
     }
@@ -30,49 +40,48 @@ class BlockController extends Controller
      */
     public function index(Request $request)
     {
-        // return Block::all();
+        $brandQuery = new Brand;
 
-        $blockQuery = new Block;
-
-        // searching
+        // Search
         $search_query = $request->query('search');
         if ($search_query) {
-            // for loop can be used here with the searchable fields stored inside an array
-            $blockQuery = $blockQuery->where('title', 'like', '%'. $search_query . '%')
-                                     ->orWhere('content', 'like', '%'. $search_query . '%')
-                                     ->orWhere('section_code', 'like', '%'. $search_query . '%')
-                                     ->orWhere('btn_title', 'like', '%'. $search_query . '%');
+            foreach ($brandQuery->searchable_fields as $field) {
+                $brandQuery = $brandQuery->orWhere($field, 'like', '%'. $search_query . '%');
+            }
         }
 
-        // filtering
+        // ? skipped for now
+        // Filters
         $filters = $request->query('filters');
         if ($filters) {
+            dd('skipped for now');
             $filters = json_decode($filters, true);
-            // dd($filters);
             foreach ($filters as $key => $filter) {
                 if (is_array($filter)) {
-                    $blockQuery = $blockQuery->whereIn($key, $filter);
+                    $brandQuery = $brandQuery->whereIn($key, $filter);
                 } else {
-                    $blockQuery = $blockQuery->where($key, 'like' ,'%'.$filter.'%');
+                    $brandQuery = $brandQuery->where($key, 'like', '%'.$filter.'%');
                 }
             }
         }
 
-        // sorting
-        // ? remember to use this sort query from next time onwards ==> ?sort=field:order ?sort=+field / sort=-field ?sort[field]=field&sort[order]=order
+        // Sort
         $sort_field = $request->query('sort');
         $sort_mode = $request->query('sort-order');
         if ($sort_field) {
-            $blockQuery = $blockQuery->orderBy($sort_field, strtolower($sort_mode ?? 'asc'));
+            $brandQuery = $brandQuery->orderBy($sort_field, strtolower($sort_mode ?? 'asc'));
         }
+
         // limiting
         $limit = $request->query('limit');
         if ($limit && $limit == -1) {
-            return Block::all();
+            return Brand::all();
         }
-        // paginiting and returning final results
-        return $blockQuery->paginate($limit ?? 10);
+
+        // Patinating and returning final results
+        return $brandQuery->paginate($limit ?? 10);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -83,33 +92,33 @@ class BlockController extends Controller
     public function store(Request $request)
     {
         $data = $this->validateRequest($request);
-        return Block::create($data);
+        return Brand::create($data);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Block  $block
+     * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function show(Block $block)
+    public function show(Brand $brand)
     {
-        return $block;
+        return $brand;
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Block  $block
+     * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Block $block)
+    public function update(Request $request, Brand $brand)
     {
         $data = $this->validateRequest($request);
-        $status = $block->update($data);
+        $status = $brand->update($data);
         if ($status) {
-            return $block;
+            return $brand;
         } else {
             return 'Error';
         }
@@ -118,13 +127,13 @@ class BlockController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Block  $block
+     * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Block $block)
+    public function destroy(Brand $brand)
     {
         try {
-            $block->delete();
+            $brand->delete();
         } catch (Exception $ex) {
             return response()->json(['error' => $ex->getMessage()], 403);
         }
@@ -135,12 +144,13 @@ class BlockController extends Controller
     public function deleteMultiple(Request $request)
     {
         $ids = $request->input('ids');
-        Block::destroy(json_decode("[$ids]"));
+        Brand::destroy(json_decode("[$ids]"));
         return response()->json(null, 204);
     }
 
-    public function uploadExcel(Request $request)
+    public function upload(Request $request)
     {
+        dd('skipped for now');
         $file = $request->file('file');
         $blocksFromFile = (new BlocksImport)->toCollection($file)->flatten(1);
         $blocksFromFile->each(function ($block, $key) {
@@ -156,4 +166,5 @@ class BlockController extends Controller
         return response()->json(['message' => 'data added successfully'], 200);
     }
 
+    // Should also contains code for excel/csv download
 }

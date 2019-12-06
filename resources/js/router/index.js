@@ -14,6 +14,7 @@ import Layout from '@/layout';
 
 /* Router for modules */
 import blocksRoutes from './modules/blocks';
+import brandsRoutes from './modules/brands';
 import sectionsRoutes from './modules/section';
 import errorRoutes from './modules/error';
 
@@ -90,6 +91,7 @@ export const constantRoutes = [
 
 export const asyncRoutes = [
   blocksRoutes,
+  brandsRoutes,
   sectionsRoutes,
   errorRoutes,
   {
