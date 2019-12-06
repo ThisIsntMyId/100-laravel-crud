@@ -6,7 +6,6 @@ const blocksRoutes = {
   component: Layout,
   redirect: '/blocks/index',
   name: 'Blocks',
-  alwaysShow: true,
   meta: {
     title: 'Block',
     icon: 'admin',
@@ -14,9 +13,29 @@ const blocksRoutes = {
   children: [
     {
       path: '/blocks/index',
-      component: () => import('@/views/blocks/index'),
-      name: 'Blocks',
-      meta: { title: 'Blocks', noCache: true },
+      component: () => import('@/views/blocks/BlockList'),
+      name: 'BlockList',
+      meta: { title: 'BlockList', noCache: true },
+    },
+    {
+      path: '/blocks/create',
+      component: () => import('@/views/blocks/BlockForm'),
+      // name: 'Add Blocks', //? for these view to not to show up in tags
+      meta: { title: 'Add Block', noCache: true },
+    },
+    {
+      path: '/blocks/view/:id',
+      component: () => import('@/views/blocks/BlockView.vue'),
+      // name: 'View Block',
+      hidden: true,
+      meta: { title: 'View Block', noCache: true },
+    },
+    {
+      path: '/blocks/edit/:id',
+      component: () => import('@/views/blocks/BlockForm.vue'),
+      // name: 'Edit Block', //? for these view to not to show up in tags
+      hidden: true,
+      meta: { title: 'Edit Block', noCache: true },
     },
   ],
 };

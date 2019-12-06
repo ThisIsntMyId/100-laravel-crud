@@ -1,0 +1,17 @@
+FEATURE,Blocks
+,,,,,,,,,,,,,,,,,,,,,,,,
+CRUD,*
+    index 0, *
+    view 1, *
+    form 1.25, *
+PAGINATION, *
+LIMIT, *
+SORT, *
+c FILTER, *f
+c EXPORTS, *
+c IMPORTS, *
+c SELECT OPERATIONS 2, *
+c SEARCH 3, *
+MULTILANG, *n
+TOOLTIPS, *
+FORM & VALIDATIONS 1.5, *

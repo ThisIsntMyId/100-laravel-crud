@@ -1,0 +1,99 @@
+<template>
+  <div>
+    <el-button type="primary" icon="el-icon-upload" @click="uploadDialogVisible = true">Import CSV</el-button>
+    <el-dialog title="Import Data from CSV" :visible.sync="uploadDialogVisible" width="30%">
+      <div>
+        <el-upload
+          ref="upload"
+          class="upload-demo"
+          action
+          :on-change="handleUploadChange"
+          :before-upload="handleBeforeUpload"
+          accept=".csv"
+          :file-list="fileList"
+          :auto-upload="false"
+        >
+          <el-button slot="trigger" size="small" type="primary">Click to upload</el-button>
+          <el-button
+            style="margin-left: 10px;"
+            size="small"
+            type="success"
+            @click="submitUpload"
+          >upload to server</el-button>
+          <div slot="tip" class="el-upload__tip">jpg/png files with a size less than 500kb</div>
+        </el-upload>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+export default {
+  data() {
+    return {
+      uploadDialogVisible: false,
+      fileList: [],
+    };
+  },
+  methods: {
+    submitUpload() {
+      if (this.fileList.length === 0) {
+        this.$message.error('Please select some file to upload');
+        return false;
+      }
+      const formData = new FormData();
+      formData.append('csvfile', this.fileList[0].raw);
+      this.fileList[0].status = 'uploading';
+      axios
+        .post('/api/cards/csvupload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: function(progressEvent) {
+            this.fileList[0].percentage = parseInt(
+              Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            );
+          }.bind(this),
+        })
+        .then(() => {
+          this.$message.success('Success');
+          this.getCardList({ page: 1 });
+          this.fileList[0].status = 'success';
+          // this.fileList = []; //Temporary depicts that the file has been uploaded
+        })
+        .catch(() => {
+          alert('error');
+        });
+    },
+    handleUploadChange(file, fileList) {
+      this.fileList = fileList.slice(-1);
+    },
+    handleBeforeUpload(file) {
+      const allowedCsvMime = [
+        'text/csv',
+        'text/plain',
+        'application/csv',
+        'text/comma-separated-values',
+        'application/excel',
+        'application/vnd.ms-excel',
+        'application/vnd.msexcel',
+        'text/anytext',
+        'application/octet-stream',
+        'application/txt',
+      ];
+      if (allowedCsvMime.includes(file.type)) {
+        return true;
+      } else {
+        this.$message.error(
+          'You can only upload CSV files. No other file types are allowed'
+        );
+        this.fileList.pop(file);
+      }
+    },
+  },
+};
+</script>
+
+<style>
+</style>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Block;
+use App\Imports\BlocksImport;
 use Illuminate\Http\Request;
 
 class BlockController extends Controller
@@ -27,9 +28,49 @@ class BlockController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Block::all();
+        // return Block::all();
+
+        $blockQuery = new Block;
+
+        // searching
+        $search_query = $request->query('search');
+        if ($search_query) {
+            $blockQuery = $blockQuery->where('title', 'like', '%'. $search_query . '%')
+                                     ->orWhere('content', 'like', '%'. $search_query . '%')
+                                     ->orWhere('section_code', 'like', '%'. $search_query . '%')
+                                     ->orWhere('btn_title', 'like', '%'. $search_query . '%');
+        }
+
+        // filtering
+        $filters = $request->query('filters');
+        if ($filters) {
+            $filters = json_decode($filters, true);
+            // dd($filters);
+            foreach ($filters as $key => $filter) {
+                if (is_array($filter)) {
+                    $blockQuery = $blockQuery->whereIn($key, $filter);
+                } else {
+                    $blockQuery = $blockQuery->where($key, 'like' ,'%'.$filter.'%');
+                }
+            }
+        }
+
+        // sorting
+        // ? remember to use this sort query from next time onwards ==> ?sort=field:order ?sort=+field / sort=-field ?sort[field]=field&sort[order]=order
+        $sort_field = $request->query('sort');
+        $sort_mode = $request->query('sort-order');
+        if ($sort_field) {
+            $blockQuery = $blockQuery->orderBy($sort_field, strtolower($sort_mode ?? 'asc'));
+        }
+        // limiting
+        $limit = $request->query('limit');
+        if ($limit && $limit == -1) {
+            return Block::all();
+        }
+        // paginiting and returning final results
+        return $blockQuery->paginate($limit ?? 10);
     }
 
     /**
@@ -88,5 +129,44 @@ class BlockController extends Controller
         }
 
         return response()->json(null, 204);
+    }
+
+    public function deleteMultiple(Request $request)
+    {
+        $ids = $request->input('ids');
+        Block::destroy(json_decode("[$ids]"));
+        return response()->json(null, 204);
+    }
+
+    public function search()
+    {
+    }
+
+    public function uploadCsv(Request $request)
+    {
+        dd($request);
+    }
+
+    public function uploadExcel(Request $request)
+    {
+        $file = $request->file('file');
+        $blocksFromFile = (new BlocksImport)->toCollection($file)->flatten(1);
+        $blocksFromFile->each(function ($block, $key) {
+            Block::updateOrCreate(['id' => $block['id']], ["section_code" => $block["section_code"],
+                                                           "language" => $block["language"],
+                                                           "title" => $block["title"],
+                                                           "content" => $block["content"],
+                                                           "image" => $block["image"],
+                                                           "image_mobile" => $block["image_mobile"],
+                                                           "link" => $block["link"],
+                                                           "btn_title" => $block["button_link"]]); // ? fix btn_title not there instead there is button_link
+        });
+        return response()->json(['message' => 'data added successfully'], 200);
+    }
+
+    public function filter(Request $request)
+    {
+        dd($request->all());
+        // dd($request->query('filter'));
     }
 }

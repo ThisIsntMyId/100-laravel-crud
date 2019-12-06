@@ -21,3 +21,124 @@ sales
 store
 
 tags
+
+coupons: 
+    id                          => autoinc int
+    title                       => {en: , ar: ,}
+    store_id                    => int => store id
+    description                 => {en: , ar: ,}
+    promo_text                  => {en: , ar: ,}
+    type                        => ['offer', 'coupon']
+    code                        => text
+    link                        => text
+    brands                      => [brand id]
+    tags                        => [tags id]
+    cat                         => [category id]
+    is_featured                 => bool
+    created_mode                => String
+    network_id                  => network id
+    network_coupon_id           => int
+    expiry_date                 => date
+    status                      => ['publish', 'draft', 'trash']
+    clicks                      => int
+
+store:
+    id                          => autoinc int
+    slug                        => text
+    name                        => text
+    about_store                 => {en: , ar: ,}
+    sp_terms_title              => {en: , ar: ,}
+    sp_terms                    => {en: , ar: ,}
+    cb_terms                    => {en: , ar: ,}
+    secret                      => {en: , ar: ,}
+    h1_tag                      => {en: , ar: ,}
+    h2_tag                      => {en: , ar: ,}
+    meta_title                  => {en: , ar: ,}
+    meta_desc                   => {en: , ar: ,}
+    meta_kw                     => {en: , ar: ,}
+    logo                        => image => db(text => url)
+    categories                  => [categories id]
+    offer_count                 => int
+    current_cb                  => int
+    amount_type                 => ['fixed', 'percent']
+    rate_type                   => ['upto', 'flat']
+    was_cb                      => text => amt_type|amt
+    header_img                  => image => db(text => url)
+    ref_id                      => int
+    homepage                    => text => url
+    dl_url_build                => text
+    cb_status                   => boolean
+    cashback_percent            => int
+    rate_stars                  => float => 0-5
+    rate_count                  => int
+    tracking_days               => int
+    claim_days                  => int 
+    clicks                      => int
+    creation_mode               => text
+    network_id                  => int
+    network_store_id            => int
+    filter                      => {cat: [], brand: [], tags: [], store: []}
+    status                      => ['publish', 'draft', 'trash']
+    visits                      => int
+    exclude_sitemap             => boolean
+
+brands:
+    id                          => autoinc
+    name                        => {en: , ar: ,}
+    slug                        => text
+    description                 => {en: , ar: ,}
+    h1_tag                      => {en: , ar: ,}
+    h2_tag                      => {en: , ar: ,}
+    meta_title                  => {en: , ar: ,}
+    meta_desc                   => {en: , ar: ,}
+    meta_kw                     => {en: , ar: ,}
+    icon                        => image => db(text => url)
+    header_img                  => image => db(text => url)
+    recom_store                 => [store id]
+    override_store              => boolean
+    visits                      => int
+    exclude_sitemap             => boolean
+    filter                      => {cat: [], brand: [], tags: [], store: []}
+    offer_count                 => int
+
+
+tags:
+    id                          => autoinc
+    slug                        => text
+    parent_id                   => int
+    name                        => {en: , ar: ,}
+    description                 => {en: , ar: ,}
+    h1_tag                      => {en: , ar: ,}
+    h2_tag                      => {en: , ar: ,}
+    meta_title                  => {en: , ar: ,}
+    meta_desc                   => {en: , ar: ,}
+    meta_kw                     => {en: , ar: ,}
+    icon                        => image => db(text => url)
+    header_img                  => image => db(text => url)
+    is_filter                   => boolean
+    recom_store                 => [store id]
+    override_store              => boolean
+    visits                      => int
+    exclude_sitemap             => boolean
+    offer_count                 => int
+    filter                      => {cat: [], brand: [], tags: [], store: []}
+
+
+categories:
+    id                          => autoinc
+    name                        => {en: , ar: ,}
+    slug                        => text
+    parent_id                   => int
+    description                 => {en: , ar: ,}
+    icon                        => image => db(text => url)
+    h1_tag                      => {en: , ar: ,}
+    h2_tag                      => {en: , ar: ,}
+    meta_title                  => {en: , ar: ,}
+    meta_desc                   => {en: , ar: ,}
+    meta_kw                     => {en: , ar: ,}
+    recom_store                 => [store id]
+    override_store              => boolean
+    header_img                  => image => db(text => url)
+    visits                      => int
+    exclude_sitemap             => boolean
+    store_count                 => int
