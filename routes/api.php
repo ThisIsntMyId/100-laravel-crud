@@ -45,6 +45,8 @@ Route::group(['middleware' => 'api'], function () {
     Route::apiResource('pages', 'PageController');
 
     // Brands
+    Route::get('brands/export', 'BrandController@export');
+    Route::post('brands/upload', 'BrandController@upload');
     Route::delete('brands/delete-multiple', 'BrandController@deleteMultiple');
     Route::apiResource('brands', 'BrandController');
 

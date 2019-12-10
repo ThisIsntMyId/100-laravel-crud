@@ -4,39 +4,25 @@
     <el-dialog title="Filter Blocks" :visible.sync="dialogVisible" width="700px">
       <div>
         <!-- section code -->
-        <FilterField
+        <SelectFilterComponent
           label="Section Code"
           param-name="section_code"
-          :param-value="filterParams.section_code"
+          :param-value.sync="filterParams.section_code"
+          :src="section_codes"
           :sort-field="sort.field"
           :sort-asc="sort.asc"
           @handle-sort-change="handleSortChange($event)"
-        >
-          <el-select
-            v-model="filterParams.section_code"
-            placeholder="Select section_code"
-            multiple
-            collapse-tags
-            clearable
-            style="width: 300px;"
-          >
-            <el-option v-for="item in section_codes" :key="item" :label="item" :value="item" />
-          </el-select>
-        </FilterField>
-        <FilterField
+        />
+        <CheckBoxFilterComponent
           label="Language"
           param-name="language"
-          :param-value="filterParams.language"
+          :param-value.sync="filterParams.language"
+          :src="[{value: 'en', label: 'English'}, {value: 'ar', label: 'Arabic'}, {value: 'mr', label: 'Marathi'}]"
           :sort-field="sort.field"
           :sort-asc="sort.asc"
           @handle-sort-change="handleSortChange($event)"
-        >
-          <el-checkbox-group v-model="filterParams.language">
-            <el-checkbox label="en">English</el-checkbox>
-            <el-checkbox label="ar">Arabic</el-checkbox>
-          </el-checkbox-group>
-        </FilterField>
-        <FilterField
+        />
+        <InputFilterComponent
           label="Title"
           param-name="title"
           :param-value.sync="filterParams.title"
@@ -44,7 +30,7 @@
           :sort-asc="sort.asc"
           @handle-sort-change="handleSortChange($event)"
         />
-        <FilterField
+        <InputFilterComponent
           label="Content"
           param-name="content"
           :param-value.sync="filterParams.content"
@@ -52,7 +38,7 @@
           :sort-asc="sort.asc"
           @handle-sort-change="handleSortChange($event)"
         />
-        <FilterField
+        <InputFilterComponent
           label="Image"
           param-name="image"
           :param-value.sync="filterParams.image"
@@ -60,7 +46,7 @@
           :sort-asc="sort.asc"
           @handle-sort-change="handleSortChange($event)"
         />
-        <FilterField
+        <InputFilterComponent
           label="Image Mobile"
           param-name="image_mobile"
           :param-value.sync="filterParams.image_mobile"
@@ -68,7 +54,7 @@
           :sort-asc="sort.asc"
           @handle-sort-change="handleSortChange($event)"
         />
-        <FilterField
+        <InputFilterComponent
           label="Link"
           param-name="link"
           :param-value.sync="filterParams.link"
@@ -76,10 +62,46 @@
           :sort-asc="sort.asc"
           @handle-sort-change="handleSortChange($event)"
         />
-        <FilterField
+        <InputFilterComponent
           label="Button Link"
           param-name="btn_title"
           :param-value.sync="filterParams.btn_title"
+          :sort-field="sort.field"
+          :sort-asc="sort.asc"
+          @handle-sort-change="handleSortChange($event)"
+        />
+        <BooleanFilterComponent
+          label="bool"
+          param-name="bool"
+          :param-value.sync="filterParams.bool"
+          :sort-field="sort.field"
+          :sort-asc="sort.asc"
+          @handle-sort-change="handleSortChange($event)"
+        />
+        <RadioFilterComponent
+          label="Activity"
+          param-name="activity"
+          :param-value.sync="filterParams.activity"
+          :src="[{value: 'd', label: 'Dance'}, {value: 'r', label: 'Read'}, {value: 'p', label: 'Play'}]"
+          :sort-field="sort.field"
+          :sort-asc="sort.asc"
+          @handle-sort-change="handleSortChange($event)"
+        />
+        <RangeFilterComponent
+          label="Price"
+          param-name="range"
+          :param-value.sync="filterParams.range"
+          :max="500"
+          :min="0"
+          :sort-field="sort.field"
+          :sort-asc="sort.asc"
+          @handle-sort-change="handleSortChange($event)"
+        />
+        <RateFilterComponent
+          label="Rate Us?"
+          param-name="rate"
+          :max="10"
+          :param-value.sync="filterParams.rate"
           :sort-field="sort.field"
           :sort-asc="sort.asc"
           @handle-sort-change="handleSortChange($event)"
@@ -95,19 +117,33 @@
 
 <script>
 import FilterField from './FilterField';
+import InputFilterComponent from './FilterComponents/InputFilterComponent';
+import SelectFilterComponent from './FilterComponents/SelectFilterComponent';
+import CheckBoxFilterComponent from './FilterComponents/CheckBoxFilterComponent';
+import BooleanFilterComponent from './FilterComponents/BooleanFilterComponent';
+import RadioFilterComponent from './FilterComponents/RadioFilterComponent';
+import RangeFilterComponent from './FilterComponents/RangeFilterComponent';
+import RateFilterComponent from './FilterComponents/RateFilterComponent';
 import Resource from '@/api/resource';
 const SectionResource = new Resource('sections');
 
 export default {
-  name: 'BlockFilter',
+  name: 'FilterPannel',
   components: {
     FilterField,
+    InputFilterComponent,
+    SelectFilterComponent,
+    CheckBoxFilterComponent,
+    BooleanFilterComponent,
+    RadioFilterComponent,
+    RangeFilterComponent,
+    RateFilterComponent,
   },
   data() {
     return {
       dialogVisible: false,
       filterParams: {
-        section_code: '',
+        section_code: [],
         language: [],
         title: '',
         content: '',
@@ -115,6 +151,11 @@ export default {
         image_mobile: '',
         link: '',
         btn_title: '',
+        // ---
+        bool: false,
+        activity: 'r',
+        range: [0,200],
+        rate: 0,
       },
       sort: {
         field: '',
@@ -146,15 +187,14 @@ export default {
         },
         {}
       );
-      console.log(nonEmptyFilterParams);
-      this.$emit('filter-params', {
+      this.$emit('set-filter', {
         filters: nonEmptyFilterParams,
         sort: this.sort,
       });
     },
     resetFilters() {
       this.filterParams = {
-        section_code: '',
+        section_code: [],
         language: [],
         title: '',
         content: '',
@@ -162,11 +202,17 @@ export default {
         image_mobile: '',
         link: '',
         btn_title: '',
+        // ---
+        bool: false,
+        activity:'',
+        range: [0,200],
+        rate: 0,
       };
       this.sort = {
         field: '',
         asc: true,
       };
+      this.$emit('reset-filter');
     },
   },
 };

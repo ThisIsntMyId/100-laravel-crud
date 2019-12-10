@@ -6,18 +6,18 @@
       </el-col>
       <el-col :span="14" style="display: flex; justify-content: flex-end; align-items: center">
         <el-input
-          v-model="searchQuery"
+          v-model="navigation.search"
           placeholder="Search anything here"
           prefix-icon="el-icon-search"
           style="width: 300px; margin: 0 10px;"
           @keydown.enter.native="handleGlobalSearch"
         />
-        <BlockFilter style="margin: 0 10px" @filter-params="handleFilterVals" />
+        <FilterPannel style="margin: 0 10px" @set-filter="handleFilterVals" @reset-filter="getTableData({})" />
         <Import @import-success="handleImportSucces" @import-error="handleImportError" />
         <Export
           :all-data="allData"
           :current-data="tableData"
-          :selected-data="selectedBlocks"
+          :selected-data="selected"
           :header="['Id', 'Section Code', 'Language', 'Title', 'Content', 'Image', 'Image Mobile', 'Link', 'Button Link',]"
           :fields="['id', 'section_code', 'language', 'title', 'content', 'image', 'image_mobile', 'link', 'btn_link',]"
           file-name="BlocksData"
@@ -31,7 +31,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <!-- <el-table
+      <el-table
         ref="table"
         v-loading="loading.tableData"
         :data="tableData"
@@ -48,13 +48,13 @@
                 icon="el-icon-view"
                 type="primary"
                 circle
-                @click="$router.push(`/blocks/view/${scope.row.id}`)"
+                @click="$router.push(`/brands/view/${scope.row.id}`)"
               />
               <el-button
                 icon="el-icon-edit"
                 type="success"
                 circle
-                @click="$router.push(`/blocks/edit/${scope.row.id}`)"
+                @click="$router.push(`/brands/edit/${scope.row.id}`)"
               />
               <el-button
                 icon="el-icon-delete"
@@ -65,33 +65,204 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="section_code" label="Section Code" width="200px" sortable="custom" />
-        <el-table-column prop="language" label="Language" width="130px" sortable="custom" />
-        <el-table-column prop="title" label="Title" sortable="custom" />
-        <el-table-column prop="content" label="Content" width="500px" sortable="custom" />
-        <el-table-column prop="image" label="Image" sortable="custom"/>
-        <el-table-column prop="image_mobile" label="Image Mobile" sortable="custom"/>
-        <el-table-column prop="link" label="Link" sortable="custom" />
-        <el-table-column prop="btn_title" label="Btn Title" sortable="custom" />
-      </el-table> -->
+        <el-table-column
+          v-for="field in fieldsToShow"
+          :key="field"
+          :prop="field"
+          :label="field.replace('_',' ')"
+          sortable="custom"
+        >
+          <template slot-scope="scope">
+            <div class="cell">{{ getLangValues(scope.row[field]) }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="icon" prop="icon">
+          <template slot-scope="scope">
+            <img :src="scope.row.icon" width="100px" height="100px">
+          </template>
+        </el-table-column>
+      </el-table>
     </el-row>
     <el-row>
-      <!-- <pagination
+      <pagination
         style="padding: 0;"
         :total="paginationData.total"
         :page.sync="paginationData.current_page"
         :limit.sync="paginationData.per_page"
         @pagination="handlePagination"
-      /> -->
+      />
     </el-row>
   </div>
 </template>
 
 <script>
+import Pagination from '@/components/Pagination';
+import FilterPannel from './components/FilterPannel';
+import Export from './components/Export'; // ? not needed
+import Import from './components/Import';
+import axios from 'axios';
+import Resource from '@/api/resource';
+const BrandResource = new Resource('brands');
+
 export default {
   name: 'BrandList',
+  components: {
+    Pagination,
+    FilterPannel,
+    Export,
+    Import,
+  },
+  data() {
+    return {
+      language: 'en',
+      tableData: [],
+      fieldsToShow: ['name', 'slug', 'description', 'visits', 'offers_count'],
+      paginationData: {
+        current_page: 0,
+        last_page: 0,
+        per_page: 0,
+        total: 0,
+      },
+      // currentSort: {
+      //   field: '',
+      //   order: 'asc',
+      // },
+      navigation: {
+        page: 1,
+        limit: 10,
+        sort: '',
+        'sort-order': 'asc',
+        filters: '',
+        search: '',
+      },
+      // searchQuery: '', // ? for search
+      filters: '',
+      selected: [], // ? for selection
+      loading: {
+        tableData: false,
+      },
+      allData: [],
+    };
+  },
+  watch: {
+    async 'navigation.search'(newVal, oldVal) {
+      await this.handleGlobalSearch();
+    },
+  },
+  async created() {
+    await this.getTableData({});
+    this.allData = await BrandResource.list({ limit: -1 });
+  },
+  methods: {
+    async getTableData(query) {
+      this.loading.tableData = true;
+      const responseData = await BrandResource.list(query);
+      this.tableData = responseData.data;
+      this.paginationData = this.pick(
+        ['current_page', 'last_page', 'per_page', 'total'],
+        responseData
+      );
+      Object.keys(this.paginationData).forEach(
+        key => (this.paginationData[key] = parseInt(this.paginationData[key]))
+      );
+      this.loading.tableData = false;
+    },
+    // utils
+    pick(propsArr, srcObj) {
+      return Object.keys(srcObj).reduce((obj, k) => {
+        if (propsArr.includes(k)) {
+          obj[k] = srcObj[k];
+        }
+        return obj;
+      }, {});
+    },
+    getLangValues(str) {
+      if(/\{.*\}/.test(str)){
+        return JSON.parse(str)[this.$store.state.app.language];
+      } else {
+        return str;
+      }
+    },
+    // Sort
+    async handleSortChange(change) {
+      this.navigation.sort = change.prop;
+      if (change.order === 'ascending') {
+        this.navigation['sort-order'] = 'asc';
+      } else if (change.order === 'descending') {
+        this.navigation['sort-order'] = 'desc';
+      }
+      await this.getTableData(this.navigation);
+    },
+    // Pagination
+    async handlePagination(obj) {
+      // obj page obj containing {page: ..., limit: ...}
+      this.navigation.page = obj.page;
+      this.navigation.limit = obj.limit;
+      await this.getTableData(this.navigation);
+    },
+    // Global Search
+    async handleGlobalSearch() {
+      await this.getTableData(this.navigation);
+    },
+    // ? Skipped for now
+    // Filters
+    async handleFilterVals(filterparams) {
+      this.navigation.filters = JSON.stringify(filterparams.filters);
+      this.navigation.sort = filterparams.sort.field;
+      this.navigation.sort = 'name';
+      this.navigation['sort-order'] = filterparams.sort.asc ? 'asc' : 'desc';
+      console.log("Filters => ",this.filters);
+      await this.getTableData(this.navigation);
+    },
+    async handleDeleteClick(id) {
+      BrandResource.destroy(id)
+        .then(res => {
+          this.$message.success('Brand Deleted Successfully');
+          this.getTableData({ page: this.paginationData.current_page });
+        })
+        .error(err => {
+          this.$message.error(err);
+        });
+    },
+    // Selection methods
+    handleSelectionChange(selection) {
+      this.selected = selection;
+    },
+    getRowKeys(row) {
+      return row.id;
+    },
+    // Multiple Delete
+    handleMultipleDelete() {
+      axios
+        .delete(
+          `/api/brands/delete-multiple?ids=${this.selected
+            .map(item => item.id)
+            .join(',')}`
+        )
+        .then(async() => {
+          this.$message.success('Records deleted successfully');
+          await this.getTableData({ page: this.paginationData.current_page });
+          if (this.tableData.length === 0) {
+            await this.getTableData({
+              page: this.paginationData.current_page,
+            });
+          }
+          this.$refs.table.clearSelection();
+        })
+        .catch();
+    },
+    // Import Events
+    handleImportSucces() {
+      this.$message.success('New Data Imported');
+      this.getTableData({});
+    },
+    handleImportError(err) {
+      this.$message.error('There were some errors. CHK console');
+      console.log(err);
+    },
+  },
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 </style>

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Brand;
+use App\Exports\BrandsExport;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BrandController extends Controller
 {
@@ -14,7 +16,7 @@ class BrandController extends Controller
         $validatedData = $request->validate([
             "name" => 'required | json',
             // "slug" => ['required','unique:brands,slug' . (($isUpdateQuery && $exists) ? ',' . $request->slug . ',slug': '')],
-            "slug" => ['nullable','unique:brands,slug'],
+            "slug" => ['nullable', 'unique:brands,slug'],
             "description" => 'nullable | json',
             "h1_tag" => 'nullable | json',
             "h2_tag" => 'nullable | json',
@@ -46,7 +48,7 @@ class BrandController extends Controller
         $search_query = $request->query('search');
         if ($search_query) {
             foreach ($brandQuery->searchable_fields as $field) {
-                $brandQuery = $brandQuery->orWhere($field, 'like', '%'. $search_query . '%');
+                $brandQuery = $brandQuery->orWhere($field, 'like', '%' . $search_query . '%');
             }
         }
 
@@ -54,15 +56,16 @@ class BrandController extends Controller
         // Filters
         $filters = $request->query('filters');
         if ($filters) {
-            dd('skipped for now');
-            $filters = json_decode($filters, true);
-            foreach ($filters as $key => $filter) {
-                if (is_array($filter)) {
-                    $brandQuery = $brandQuery->whereIn($key, $filter);
-                } else {
-                    $brandQuery = $brandQuery->where($key, 'like', '%'.$filter.'%');
-                }
-            }
+            // dd('skipped for now');
+            $brandQuery = $brandQuery->where('visits', '>', 80);
+            // $filters = json_decode($filters, true);
+            // foreach ($filters as $key => $filter) {
+            //     if (is_array($filter)) {
+            //         $brandQuery = $brandQuery->whereIn($key, $filter);
+            //     } else {
+            //         $brandQuery = $brandQuery->where($key, 'like', '%' . $filter . '%');
+            //     }
+            // }
         }
 
         // Sort
@@ -154,17 +157,24 @@ class BrandController extends Controller
         $file = $request->file('file');
         $blocksFromFile = (new BlocksImport)->toCollection($file)->flatten(1);
         $blocksFromFile->each(function ($block, $key) {
-            Block::updateOrCreate(['id' => $block['id']], ["section_code" => $block["section_code"],
-                                                           "language" => $block["language"],
-                                                           "title" => $block["title"],
-                                                           "content" => $block["content"],
-                                                           "image" => $block["image"],
-                                                           "image_mobile" => $block["image_mobile"],
-                                                           "link" => $block["link"],
-                                                           "btn_title" => $block["button_link"]]); // ? fix btn_title not there instead there is button_link
+            Block::updateOrCreate(['id' => $block['id']], [
+                "section_code" => $block["section_code"],
+                "language" => $block["language"],
+                "title" => $block["title"],
+                "content" => $block["content"],
+                "image" => $block["image"],
+                "image_mobile" => $block["image_mobile"],
+                "link" => $block["link"],
+                "btn_title" => $block["button_link"]
+            ]); // ? fix btn_title not there instead there is button_link
         });
         return response()->json(['message' => 'data added successfully'], 200);
     }
 
-    // Should also contains code for excel/csv download
+    public function export(Request $request)
+    {
+        dd('skipped for now');
+        $lang = $request->query('lang');
+        return (new BrandsExport($lang))->download('BrandsExport.xlsx');
+    }
 }

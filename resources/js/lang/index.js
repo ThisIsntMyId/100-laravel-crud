@@ -29,6 +29,10 @@ const messages = {
     ...viLocale,
     ...elementViLocale,
   },
+  ar: {
+    ...enLocale,
+    ...elementEnLocale,
+  },
 };
 
 export function getLanguage() {
