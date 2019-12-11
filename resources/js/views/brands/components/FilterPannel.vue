@@ -22,6 +22,12 @@ export default {
     RangeFilterComponent,
     RateFilterComponent,
   },
+  props: {
+    filterPannelObj: {
+      type: Object,
+      required: true,
+    }
+  },
   data() {
     return {
       dialogVisible: false,
@@ -31,73 +37,9 @@ export default {
         field: '',
         asc: true,
       },
-      section_codes: [],
-      filterPannelObj: {
-        section_code: {
-          default: [],
-          type: 'Select',
-          label: 'Section Code',
-          src: 'section_codes',
-          multiple: true,
-        },
-        language: {
-          default: [],
-          type: 'CheckBox',
-          label: 'Language',
-          src: [
-            { value: 'en', label: 'English' },
-            { value: 'ar', label: 'Arabic' },
-            { value: 'mr', label: 'Marathi' },
-          ],
-        },
-        title: {
-          default: '',
-          type: 'Input',
-          label: 'Title',
-        },
-        content: {
-          default: '',
-          type: 'Input',
-          label: 'Content',
-        },
-        bool: {
-          default: false,
-          type: 'Boolean',
-          label: 'Boolean Value',
-        },
-        activity: {
-          default: '',
-          type: 'Radio',
-          label: 'Activity',
-          src: [
-            { value: 'd', label: 'Dance' },
-            { value: 'r', label: 'Read' },
-            { value: 'p', label: 'Play' },
-          ],
-        },
-        price: {
-          default: [100, 300],
-          type: 'Range',
-          label: 'Price',
-          max: 500,
-          min: 0,
-        },
-        rating: {
-          default: 0,
-          type: 'Rate',
-          label: 'Rate Us',
-        },
-        taxes: {
-          default: 0,
-          type: 'Input',
-          label: 'Taxes',
-          default: '',
-        },
-      },
     };
   },
   async created() {
-    await this.getSectionCodes();
     this.defaultFilterValues = Object.entries(this.filterPannelObj).reduce(
       (acc, obj) => {
         acc[obj[0]] = obj[1].default;
@@ -107,23 +49,12 @@ export default {
     );
     this.filterParams = JSON.parse(JSON.stringify(this.defaultFilterValues));
   },
-  watch: {
-    section_codes(newVal, oldVal) {
-      this.filterPannelObj.section_code.src = newVal;
-    },
-  },
   methods: {
     handleSortChange(field) {
       this.sort.field = field;
       this.sort.asc = !this.sort.asc;
     },
-    async getSectionCodes() {
-      this.section_codes = (await SectionResource.list({})).map(
-        item => item.code
-      );
-    },
     submitFilterParams() {
-      alert();
       const nonEmptyFilterParams = Object.entries(this.filterParams).reduce(
         (acc, [key, val]) => {
           if (!(val === '' || val === [])) {
@@ -139,7 +70,6 @@ export default {
       });
     },
     resetFilters() {
-      alert();
       this.filterParams = JSON.parse(JSON.stringify(this.defaultFilterValues));
       this.sort = {
         field: '',

@@ -12,7 +12,12 @@
           style="width: 300px; margin: 0 10px;"
           @keydown.enter.native="handleGlobalSearch"
         />
-        <FilterPannel style="margin: 0 10px" @set-filter="handleFilterVals" @reset-filter="getTableData({})" />
+        <FilterPannel
+          style="margin: 0 10px"
+          @set-filter="handleFilterVals"
+          @reset-filter="getTableData({})"
+          :filter-pannel-obj="filterPannelObj"
+        />
         <Import @import-success="handleImportSucces" @import-error="handleImportError" />
         <Export
           :all-data="allData"
@@ -78,7 +83,7 @@
         </el-table-column>
         <el-table-column label="icon" prop="icon">
           <template slot-scope="scope">
-            <img :src="scope.row.icon" width="100px" height="100px">
+            <img :src="scope.row.icon" width="100px" height="100px" />
           </template>
         </el-table-column>
       </el-table>
@@ -142,6 +147,68 @@ export default {
         tableData: false,
       },
       allData: [],
+      filterPannelObj: {
+        section_code: {
+          default: [],
+          type: 'Select',
+          label: 'Section Code',
+          src: 'section_codes',
+          multiple: true,
+        },
+        language: {
+          default: [],
+          type: 'CheckBox',
+          label: 'Language',
+          src: [
+            { value: 'en', label: 'English' },
+            { value: 'ar', label: 'Arabic' },
+            { value: 'mr', label: 'Marathi' },
+          ],
+        },
+        title: {
+          default: '',
+          type: 'Input',
+          label: 'Title',
+        },
+        content: {
+          default: '',
+          type: 'Input',
+          label: 'Content',
+        },
+        bool: {
+          default: false,
+          type: 'Boolean',
+          label: 'Boolean Value',
+        },
+        activity: {
+          default: '',
+          type: 'Radio',
+          label: 'Activity',
+          src: [
+            { value: 'd', label: 'Dance' },
+            { value: 'r', label: 'Read' },
+            { value: 'p', label: 'Play' },
+          ],
+        },
+        price: {
+          default: [100, 300],
+          type: 'Range',
+          label: 'Price',
+          max: 500,
+          min: 0,
+        },
+        rating: {
+          default: 0,
+          type: 'Rate',
+          label: 'Rate Us',
+        },
+        taxes: {
+          default: 0,
+          type: 'Input',
+          label: 'Taxes',
+          default: '',
+        },
+      },
     };
   },
   watch: {
@@ -152,6 +219,8 @@ export default {
   async created() {
     await this.getTableData({});
     this.allData = await BrandResource.list({ limit: -1 });
+    const SectionResource = new Resource('sections');
+    this.filterPannelObj.section_code.src = (await SectionResource.list({})).map(item => item.code);
   },
   methods: {
     async getTableData(query) {
@@ -177,7 +246,7 @@ export default {
       }, {});
     },
     getLangValues(str) {
-      if(/\{.*\}/.test(str)){
+      if (/\{.*\}/.test(str)) {
         return JSON.parse(str)[this.$store.state.app.language];
       } else {
         return str;
@@ -211,7 +280,7 @@ export default {
       this.navigation.sort = filterparams.sort.field;
       this.navigation.sort = 'name';
       this.navigation['sort-order'] = filterparams.sort.asc ? 'asc' : 'desc';
-      console.log("Filters => ",this.filters);
+      console.log('Filters => ', this.filters);
       await this.getTableData(this.navigation);
     },
     async handleDeleteClick(id) {
@@ -239,7 +308,7 @@ export default {
             .map(item => item.id)
             .join(',')}`
         )
-        .then(async() => {
+        .then(async () => {
           this.$message.success('Records deleted successfully');
           await this.getTableData({ page: this.paginationData.current_page });
           if (this.tableData.length === 0) {
