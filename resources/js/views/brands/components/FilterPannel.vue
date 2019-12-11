@@ -1,87 +1,3 @@
-<template>
-  <div>
-    <el-button type="primary" icon="el-icon-s-operation" @click="dialogVisible = true">Filters</el-button>
-    <el-dialog title="Filter Blocks" :visible.sync="dialogVisible" width="700px">
-      <div>
-        <SelectFilterComponent
-          label="Section Code"
-          param-name="section_code"
-          :param-value.sync="filterParams.section_code"
-          :src="section_codes"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <CheckBoxFilterComponent
-          label="Language"
-          param-name="language"
-          :param-value.sync="filterParams.language"
-          :src="[{value: 'en', label: 'English'}, {value: 'ar', label: 'Arabic'}, {value: 'mr', label: 'Marathi'}]"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <InputFilterComponent
-          label="Title"
-          param-name="title"
-          :param-value.sync="filterParams.title"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <InputFilterComponent
-          label="Content"
-          param-name="content"
-          :param-value.sync="filterParams.content"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <BooleanFilterComponent
-          label="bool"
-          param-name="bool"
-          :param-value.sync="filterParams.bool"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <RadioFilterComponent
-          label="Activity"
-          param-name="activity"
-          :param-value.sync="filterParams.activity"
-          :src="[{value: 'd', label: 'Dance'}, {value: 'r', label: 'Read'}, {value: 'p', label: 'Play'}]"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <RangeFilterComponent
-          label="Price"
-          param-name="range"
-          :param-value.sync="filterParams.range"
-          :max="500"
-          :min="0"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <RateFilterComponent
-          label="Rate Us?"
-          param-name="rate"
-          :max="10"
-          :param-value.sync="filterParams.rate"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="resetFilters">Reset</el-button>
-        <el-button type="primary" @click="submitFilterParams">Filter</el-button>
-      </span>
-    </el-dialog>
-  </div>
-</template>
-
 <script>
 import FilterField from './FilterField';
 import InputFilterComponent from './FilterComponents/InputFilterComponent';
@@ -109,16 +25,8 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      filterParams: {
-        section_code: [],
-        language: [],
-        title: '',
-        content: '',
-        bool: false,
-        activity: 'r',
-        range: [0, 200],
-        rate: 0,
-      },
+      filterParams: {},
+      defaultFilterValues: {},
       sort: {
         field: '',
         asc: true,
@@ -127,14 +35,14 @@ export default {
       filterPannelObj: {
         section_code: {
           default: [],
-          type: 'select',
+          type: 'Select',
           label: 'Section Code',
           src: 'section_codes',
           multiple: true,
         },
         language: {
           default: [],
-          type: 'checkbox',
+          type: 'CheckBox',
           label: 'Language',
           src: [
             { value: 'en', label: 'English' },
@@ -144,22 +52,22 @@ export default {
         },
         title: {
           default: '',
-          type: 'input',
+          type: 'Input',
           label: 'Title',
         },
         content: {
           default: '',
-          type: 'input',
+          type: 'Input',
           label: 'Content',
         },
         bool: {
           default: false,
-          type: 'bool',
+          type: 'Boolean',
           label: 'Boolean Value',
         },
         activity: {
           default: '',
-          type: 'radio',
+          type: 'Radio',
           label: 'Activity',
           src: [
             { value: 'd', label: 'Dance' },
@@ -169,25 +77,39 @@ export default {
         },
         price: {
           default: [100, 300],
-          type: 'range',
+          type: 'Range',
           label: 'Price',
-          range: [0,500]
+          max: 500,
+          min: 0,
         },
         rating: {
           default: 0,
-          type: 'rate',
+          type: 'Rate',
           label: 'Rate Us',
+        },
+        taxes: {
+          default: 0,
+          type: 'Input',
+          label: 'Taxes',
+          default: '',
         },
       },
     };
   },
   async created() {
     await this.getSectionCodes();
+    this.defaultFilterValues = Object.entries(this.filterPannelObj).reduce(
+      (acc, obj) => {
+        acc[obj[0]] = obj[1].default;
+        return acc;
+      },
+      {}
+    );
+    this.filterParams = JSON.parse(JSON.stringify(this.defaultFilterValues));
   },
   watch: {
     section_codes(newVal, oldVal) {
       this.filterPannelObj.section_code.src = newVal;
-      alert();
     },
   },
   methods: {
@@ -201,6 +123,7 @@ export default {
       );
     },
     submitFilterParams() {
+      alert();
       const nonEmptyFilterParams = Object.entries(this.filterParams).reduce(
         (acc, [key, val]) => {
           if (!(val === '' || val === [])) {
@@ -216,22 +139,86 @@ export default {
       });
     },
     resetFilters() {
-      this.filterParams = {
-        section_code: [],
-        language: [],
-        title: '',
-        content: '',
-        bool: false,
-        activity: '',
-        range: [0, 200],
-        rate: 0,
-      };
+      alert();
+      this.filterParams = JSON.parse(JSON.stringify(this.defaultFilterValues));
       this.sort = {
         field: '',
         asc: true,
       };
       this.$emit('reset-filter');
     },
+    handleDialog(event) {
+      alert(event);
+      this.dialogVisible = event;
+    },
+    getFilterComponents(h, filterName, filterDef) {
+      return h(filterDef.type + 'FilterComponent', {
+        props: {
+          label: filterDef.label,
+          'param-name': filterName,
+          'param-value': this.filterParams[filterName],
+          'sort-field': this.sort.field,
+          'sort-asc': this.sort.asc,
+          ...filterDef,
+        },
+        on: {
+          'update:paramValue': event => {
+            this.filterParams[filterName] = event;
+          },
+          'handle-sort-change': event => {
+            this.handleSortChange(event);
+          },
+        },
+      });
+    },
+  },
+  render(h) {
+    return (
+      <div>
+        <el-button
+          type="primary"
+          icon="el-icon-s-operation"
+          onClick={() => {
+            this.dialogVisible = true;
+          }}
+        >
+          Filters
+        </el-button>
+        {h(
+          'el-dialog',
+          {
+            props: { title: 'Filter Pannel', visible: this.dialogVisible },
+            on: {
+              'update:visible': () => {
+                this.dialogVisible = false;
+              },
+            },
+          },
+          [
+            <div>
+              {Object.entries(this.filterPannelObj).map(filterObj =>
+                this.getFilterComponents(h, filterObj[0], filterObj[1])
+              )}
+            </div>,
+            <span slot="footer" class="dialog-footer">
+              <el-button
+                onClick={() => {
+                  this.resetFilters();
+                }}
+              >
+                Reset
+              </el-button>
+              <el-button
+                type="primary"
+                onClick={() => this.submitFilterParams()}
+              >
+                Filter
+              </el-button>
+            </span>,
+          ]
+        )}
+      </div>
+    );
   },
 };
 </script>
