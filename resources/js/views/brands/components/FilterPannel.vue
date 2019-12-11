@@ -3,7 +3,6 @@
     <el-button type="primary" icon="el-icon-s-operation" @click="dialogVisible = true">Filters</el-button>
     <el-dialog title="Filter Blocks" :visible.sync="dialogVisible" width="700px">
       <div>
-        <!-- section code -->
         <SelectFilterComponent
           label="Section Code"
           param-name="section_code"
@@ -34,38 +33,6 @@
           label="Content"
           param-name="content"
           :param-value.sync="filterParams.content"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <InputFilterComponent
-          label="Image"
-          param-name="image"
-          :param-value.sync="filterParams.image"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <InputFilterComponent
-          label="Image Mobile"
-          param-name="image_mobile"
-          :param-value.sync="filterParams.image_mobile"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <InputFilterComponent
-          label="Link"
-          param-name="link"
-          :param-value.sync="filterParams.link"
-          :sort-field="sort.field"
-          :sort-asc="sort.asc"
-          @handle-sort-change="handleSortChange($event)"
-        />
-        <InputFilterComponent
-          label="Button Link"
-          param-name="btn_title"
-          :param-value.sync="filterParams.btn_title"
           :sort-field="sort.field"
           :sort-asc="sort.asc"
           @handle-sort-change="handleSortChange($event)"
@@ -147,14 +114,9 @@ export default {
         language: [],
         title: '',
         content: '',
-        image: '',
-        image_mobile: '',
-        link: '',
-        btn_title: '',
-        // ---
         bool: false,
         activity: 'r',
-        range: [0,200],
+        range: [0, 200],
         rate: 0,
       },
       sort: {
@@ -162,10 +124,71 @@ export default {
         asc: true,
       },
       section_codes: [],
+      filterPannelObj: {
+        section_code: {
+          default: [],
+          type: 'select',
+          label: 'Section Code',
+          src: 'section_codes',
+          multiple: true,
+        },
+        language: {
+          default: [],
+          type: 'checkbox',
+          label: 'Language',
+          src: [
+            { value: 'en', label: 'English' },
+            { value: 'ar', label: 'Arabic' },
+            { value: 'mr', label: 'Marathi' },
+          ],
+        },
+        title: {
+          default: '',
+          type: 'input',
+          label: 'Title',
+        },
+        content: {
+          default: '',
+          type: 'input',
+          label: 'Content',
+        },
+        bool: {
+          default: false,
+          type: 'bool',
+          label: 'Boolean Value',
+        },
+        activity: {
+          default: '',
+          type: 'radio',
+          label: 'Activity',
+          src: [
+            { value: 'd', label: 'Dance' },
+            { value: 'r', label: 'Read' },
+            { value: 'p', label: 'Play' },
+          ],
+        },
+        price: {
+          default: [100, 300],
+          type: 'range',
+          label: 'Price',
+          range: [0,500]
+        },
+        rating: {
+          default: 0,
+          type: 'rate',
+          label: 'Rate Us',
+        },
+      },
     };
   },
   async created() {
     await this.getSectionCodes();
+  },
+  watch: {
+    section_codes(newVal, oldVal) {
+      this.filterPannelObj.section_code.src = newVal;
+      alert();
+    },
   },
   methods: {
     handleSortChange(field) {
@@ -198,14 +221,9 @@ export default {
         language: [],
         title: '',
         content: '',
-        image: '',
-        image_mobile: '',
-        link: '',
-        btn_title: '',
-        // ---
         bool: false,
-        activity:'',
-        range: [0,200],
+        activity: '',
+        range: [0, 200],
         rate: 0,
       };
       this.sort = {
