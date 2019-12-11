@@ -8,7 +8,6 @@ import RadioFilterComponent from './FilterComponents/RadioFilterComponent';
 import RangeFilterComponent from './FilterComponents/RangeFilterComponent';
 import RateFilterComponent from './FilterComponents/RateFilterComponent';
 import Resource from '@/api/resource';
-const SectionResource = new Resource('sections');
 
 export default {
   name: 'FilterPannel',
