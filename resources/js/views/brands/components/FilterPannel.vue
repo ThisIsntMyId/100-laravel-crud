@@ -1,5 +1,4 @@
 <script>
-import FilterField from './FilterField';
 import InputFilterComponent from './FilterComponents/InputFilterComponent';
 import SelectFilterComponent from './FilterComponents/SelectFilterComponent';
 import CheckBoxFilterComponent from './FilterComponents/CheckBoxFilterComponent';
@@ -12,7 +11,6 @@ import Resource from '@/api/resource';
 export default {
   name: 'FilterPannel',
   components: {
-    FilterField,
     InputFilterComponent,
     SelectFilterComponent,
     CheckBoxFilterComponent,
