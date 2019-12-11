@@ -102,7 +102,7 @@
 
 <script>
 import Pagination from '@/components/Pagination';
-import FilterPannel from './components/FilterPannel';
+import FilterPannel from '@/components/FilterPannel';
 import Export from './components/Export'; // ? not needed
 import Import from './components/Import';
 import axios from 'axios';
@@ -277,10 +277,10 @@ export default {
     // Filters
     async handleFilterVals(filterparams) {
       this.navigation.filters = JSON.stringify(filterparams.filters);
+      console.log("TCL: handleFilterVals -> this.navigation.filters", this.navigation.filters)
       this.navigation.sort = filterparams.sort.field;
       this.navigation.sort = 'name';
       this.navigation['sort-order'] = filterparams.sort.asc ? 'asc' : 'desc';
-      console.log('Filters => ', this.filters);
       await this.getTableData(this.navigation);
     },
     async handleDeleteClick(id) {

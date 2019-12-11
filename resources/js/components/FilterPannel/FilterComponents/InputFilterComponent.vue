@@ -4,14 +4,12 @@
       <strong style="font-size: 1.5rem">{{ label }}</strong>
     </el-col>
     <el-col :span="12">
-      <slot :paramValue="paramValue">
-        <el-input
-          :placeholder="label.toLowerCase()"
-          style="width: 300px;"
-          :value="paramValue"
-          @input="$emit('update:paramValue', $event)"
-        />
-      </slot>
+      <el-input
+        :placeholder="label.toLowerCase()"
+        style="width: 300px;"
+        :value="paramValue"
+        @input="$emit('update:paramValue', $event)"
+      />
     </el-col>
     <el-col :span="4">
       <div>
@@ -29,7 +27,7 @@
 
 <script>
 export default {
-  name: 'FilterField',
+  name: 'InputFilterComponent',
   props: {
     label: {
       type: String,
@@ -40,7 +38,7 @@ export default {
       required: true,
     },
     paramValue: {
-      type: [String, Array, Number],
+      type: [String, Number],
       required: true,
     },
     sortField: {
