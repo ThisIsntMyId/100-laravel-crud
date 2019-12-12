@@ -22,11 +22,11 @@ class BrandsExport implements FromCollection, WithHeadings, WithStrictNullCompar
 
     public function map($row): array
     {
-        $name = json_decode($row->name, true)[$this->lang];
-        dd($name);
+        // $name = json_decode($row->name, true)[$this->lang];
+        // dd($name);
         $arr = [
             $row->id,
-            $name,
+            $row->name,
             $row->slug,
             $row->description,
             $row->h1_tag,

@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="20" style="display: flex; align-items: center;">
       <el-col :span="10">
-        <h1>Brands</h1>
+        <h1 style="text-transform: capatilize;">{{resourceName}}</h1>
       </el-col>
       <el-col :span="14" style="display: flex; justify-content: flex-end; align-items: center">
         <el-input
@@ -18,15 +18,8 @@
           @reset-filter="getTableData({})"
           :filter-pannel-obj="filterPannelObj"
         />
-        <Import @import-success="handleImportSucces" @import-error="handleImportError" />
-        <Export
-          :all-data="allData"
-          :current-data="tableData"
-          :selected-data="selected"
-          :header="['Id', 'Section Code', 'Language', 'Title', 'Content', 'Image', 'Image Mobile', 'Link', 'Button Link',]"
-          :fields="['id', 'section_code', 'language', 'title', 'content', 'image', 'image_mobile', 'link', 'btn_link',]"
-          file-name="BlocksData"
-        />
+        <Import :url="`/api/${resourceName}/upload`" @import-success="handleImportSucces" @import-error="handleImportError" />
+        <Export :url="`/api/${resourceName}/export`" :selected-ids="selected.map(el => el.id)"/>
         <el-button
           type="info"
           icon="el-icon-delete"
@@ -53,13 +46,13 @@
                 icon="el-icon-view"
                 type="primary"
                 circle
-                @click="$router.push(`/brands/view/${scope.row.id}`)"
+                @click="$router.push(`/${resourceName}/view/${scope.row.id}`)"
               />
               <el-button
                 icon="el-icon-edit"
                 type="success"
                 circle
-                @click="$router.push(`/brands/edit/${scope.row.id}`)"
+                @click="$router.push(`/${resourceName}/edit/${scope.row.id}`)"
               />
               <el-button
                 icon="el-icon-delete"
@@ -107,7 +100,8 @@ import Export from './components/Export'; // ? not needed
 import Import from './components/Import';
 import axios from 'axios';
 import Resource from '@/api/resource';
-const BrandResource = new Resource('brands');
+const resourceName = 'brands';
+const ResourceApi = new Resource(resourceName);
 
 export default {
   name: 'BrandList',
@@ -119,6 +113,7 @@ export default {
   },
   data() {
     return {
+      resourceName: resourceName,
       language: 'en',
       tableData: [],
       fieldsToShow: ['name', 'slug', 'description', 'visits', 'offers_count'],
@@ -128,10 +123,6 @@ export default {
         per_page: 0,
         total: 0,
       },
-      // currentSort: {
-      //   field: '',
-      //   order: 'asc',
-      // },
       navigation: {
         page: 1,
         limit: 10,
@@ -140,7 +131,6 @@ export default {
         filters: '',
         search: '',
       },
-      // searchQuery: '', // ? for search
       filters: '',
       selected: [], // ? for selection
       loading: {
@@ -218,14 +208,14 @@ export default {
   },
   async created() {
     await this.getTableData({});
-    this.allData = await BrandResource.list({ limit: -1 });
+    this.allData = await ResourceApi.list({ limit: -1 });
     const SectionResource = new Resource('sections');
     this.filterPannelObj.section_code.src = (await SectionResource.list({})).map(item => item.code);
   },
   methods: {
     async getTableData(query) {
       this.loading.tableData = true;
-      const responseData = await BrandResource.list(query);
+      const responseData = await ResourceApi.list(query);
       this.tableData = responseData.data;
       this.paginationData = this.pick(
         ['current_page', 'last_page', 'per_page', 'total'],
@@ -284,9 +274,9 @@ export default {
       await this.getTableData(this.navigation);
     },
     async handleDeleteClick(id) {
-      BrandResource.destroy(id)
+      ResourceApi.destroy(id)
         .then(res => {
-          this.$message.success('Brand Deleted Successfully');
+          this.$message.success('Delete Successfully');
           this.getTableData({ page: this.paginationData.current_page });
         })
         .error(err => {
@@ -304,7 +294,7 @@ export default {
     handleMultipleDelete() {
       axios
         .delete(
-          `/api/brands/delete-multiple?ids=${this.selected
+          `/api/${this.resourceName}/delete-multiple?ids=${this.selected
             .map(item => item.id)
             .join(',')}`
         )

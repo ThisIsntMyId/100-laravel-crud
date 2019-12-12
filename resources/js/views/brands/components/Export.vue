@@ -12,9 +12,9 @@
       </el-button>
     </span>
     <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item command="all-excel">Export all to excel</el-dropdown-item>
-      <el-dropdown-item command="current-excel">Export current page to excel</el-dropdown-item>
-      <el-dropdown-item command="selected-excel">Export selected to excel</el-dropdown-item>
+      <el-dropdown-item command="all-xlsx">Export all to excel</el-dropdown-item>
+      <el-dropdown-item command="current-xlsx">Export current page to excel</el-dropdown-item>
+      <el-dropdown-item command="selected-xlsx">Export selected to excel</el-dropdown-item>
       <el-dropdown-item command="all-csv" divided>Export all to csv</el-dropdown-item>
       <el-dropdown-item command="current-csv">Export current page to csv</el-dropdown-item>
       <el-dropdown-item command="selected-csv">Export selected to csv</el-dropdown-item>
@@ -23,32 +23,16 @@
 </template>
 
 <script>
-import { exportWithFieldsToExcel, exportCSVFile } from '../src/exports';
+import axios from 'axios';
 export default {
   props: {
-    allData: {
-      type: Array,
-      required: true,
-    },
-    currentData: {
-      type: Array,
-      required: true,
-    },
-    selectedData: {
-      type: Array,
-      required: true,
-    },
-    header: {
-      type: Array,
-      required: true,
-    },
-    fields: {
-      type: Array,
-      required: true,
-    },
-    fileName: {
+    url: {
       type: String,
       required: true,
+    },
+    selectedIds: {
+      type: Array,
+      default: [],
     },
   },
   data() {
@@ -60,22 +44,39 @@ export default {
   },
   methods: {
     async handleExport(command) {
-      // ! Data provided here is not filtered for csv, i.e. ',' are not removed
       this.loading.exportLoader = true;
       const dataAmt = command.split('-')[0];
       const fileType = command.split('-')[1];
-      let data = {};
-      if (dataAmt === 'all') {
-        data = this.allData;
-      } else if (dataAmt === 'current') {
-        data = this.currentData;
+      if (dataAmt === 'selected') {
+        axios({
+          url: `${
+            this.url
+          }?amt=${dataAmt}&type=${fileType}&ids=${this.selectedIds.join(',')}`,
+          method: 'GET',
+          responseType: 'blob', // important
+        }).then(response => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `Brands.${fileType}`);
+          document.body.appendChild(link);
+          link.click();
+        });
       } else {
-        data = this.selectedData;
-      }
-      if (fileType === 'excel') {
-        exportWithFieldsToExcel(this.header, this.fields, data, this.fileName);
-      } else {
-        exportCSVFile(this.header, this.fields, data, this.fileName);
+        axios({
+          url: `${
+            this.url
+          }?amt=${dataAmt}&type=${fileType}&ids=${this.selectedIds.join(',')}`,
+          method: 'GET',
+          responseType: 'blob', // important
+        }).then(response => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `Brands.${fileType}`);
+          document.body.appendChild(link);
+          link.click();
+        });
       }
       this.loading.exportLoader = false;
     },

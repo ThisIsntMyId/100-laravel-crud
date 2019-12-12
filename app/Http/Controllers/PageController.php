@@ -35,8 +35,13 @@ class PageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search_query = $request->query('search');
+        if ($search_query) {
+            // for loop can be used here with the searchable fields stored inside an array
+            return Page::where('slug', 'like', '%'. $search_query . '%')->get();
+        }
         return Page::all();
     }
 

@@ -173,8 +173,12 @@ class BrandController extends Controller
 
     public function export(Request $request)
     {
-        dd('skipped for now');
+        
         $lang = $request->query('lang');
         return (new BrandsExport($lang))->download('BrandsExport.xlsx');
+    }
+
+    public function test(Request $request) {
+        dd($request->all());
     }
 }

@@ -5,7 +5,7 @@
       <span>Enter excel file</span>
       <el-upload
         ref="upload"
-        action="/api/blocks/upload-excel"
+        :action="url"
         name="file"
         :file-list="fileList"
         :on-change="handleUploadChange"
@@ -33,6 +33,12 @@
 
 <script>
 export default {
+  props: {
+    url: {
+      type: String,
+      required: true,
+    }
+  },
   data() {
     return {
       uploadDialogVisible: false,
