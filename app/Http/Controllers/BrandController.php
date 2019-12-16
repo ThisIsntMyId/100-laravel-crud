@@ -23,7 +23,8 @@ class BrandController extends Controller
             "meta_title" => 'nullable | json',
             "meta_desc" => 'nullable | json',
             "meta_kw" => 'nullable | json',
-            "icon" => 'nullable | mimes:jpeg,bmp,png',
+            // "icon" => 'nullable | image | mimes:jpeg,bmp,png,jpg',
+            "icon" => 'nullable',
             "header_img" => 'nullable | mimes:jpeg,bmp,png',
             "recom_store" => 'nullable | json',
             "override_stores" => 'required | boolean',
@@ -95,6 +96,15 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         $data = $this->validateRequest($request);
+        dd($request);
+        $iconPath = $request->file('icon')->store('icon');
+        $headerPath = $request->file('header_image')->store('header_image');
+        print_r($iconPath);
+        print_r($headerPath);
+        $data['icon'] = $iconPath;
+        $data['header_image'] = $headerPath;
+        // $fp = asset($iconPath);
+        // dd($fp);
         dd($request);
         return Brand::create($data);
     }

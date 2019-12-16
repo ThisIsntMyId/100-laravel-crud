@@ -30,7 +30,138 @@ export default {
     return {
       formData: {},
       formJson: {
-        // field_name: {type: '', },
+        // simple input
+        name: {
+          type: 'Input',
+          label: 'Name',
+          default: '',
+          validation: [
+            {
+              required: true,
+              message: 'Please name',
+              trigger: 'blur',
+            },
+          ],
+        },
+        // boolean
+        booleans: {
+          type: 'Boolean',
+          label: 'Booleans',
+          default: false,
+        },
+        // checkbox
+        activity: {
+          type: 'CheckBox',
+          default: [],
+          label: 'Activity',
+          tooltip: 'The core activity',
+          validation: [
+            { required: true, message: 'Chose atleast one', trigger: 'blur' },
+          ],
+          src: [
+            { value: 'da', label: 'Dance' },
+            { value: 're', label: 'Read' },
+            { value: 'py', label: 'Play' },
+          ],
+        },
+        // image
+        profileImage: {
+          type: 'Image',
+          label: 'Profile Image',
+          default: [],
+          tooltipMsg: 'Your photo that is to be displayed on top',
+          validation: [
+            {
+              required: true,
+              message: 'upload an image',
+              trigger: blur,
+            },
+          ],
+        },
+        // multiline input
+        tagline: {
+          type: 'MultilangInput',
+          label: 'TagLine',
+          default: '{}',
+          langs: ['en', 'ar'],
+          validation: [
+            {
+              required: true,
+              trigger: 'blur',
+              validator: (role, value, callback) => {
+                !value || value === '{}'
+                  ? callback(new Error('Please enter a tagline'))
+                  : callback();
+              },
+            },
+          ],
+        },
+        // radio
+        language: {
+          type: 'Radio',
+          default: '',
+          label: 'Language',
+          tooltip: 'The Language of your page',
+          src: [
+            { value: 'en', label: 'English' },
+            { value: 'ar', label: 'Arabic' },
+            { value: 'mr', label: 'Marathi' },
+          ],
+          validation: [
+            {
+              required: true,
+              message: 'Language is required',
+              trigger: 'blur',
+            },
+          ],
+        },
+        // range
+        priceRange: {
+          type: 'Range',
+          default: [100, 300],
+          label: 'Price',
+          tooltipMsg: 'Your budget',
+          range: [0, 500],
+          validation: [
+            {
+              trigger: 'blur',
+              validator: (rule, value, callback) => {
+                value[0] > 350 && value[1] <= 450
+                  ? callback(new Error('You cant buy in this price range'))
+                  : callback();
+              },
+            },
+          ],
+        },
+        // Ratings
+        ratings: {
+          type: 'Rate',
+          default: 0,
+          label: 'Rate Us',
+          tooltipMsg: 'How much do u like us?',
+          validation: [
+            {
+              required: true,
+            },
+            {
+              trigger: 'blur',
+              validator: (rule, value, callback) => {
+                value === 0
+                  ? callback(
+                      new Error(
+                        ' Ratings are very important to us. So please rate us...'
+                      )
+                    )
+                  : value < 2 && value > 0
+                  ? callback(
+                      new Error('You cannot rate us less then 2 stars now')
+                    )
+                  : callback();
+              },
+            },
+          ],
+        },
+        // Select
         section_code: {
           type: 'Select',
           default: [],
@@ -56,87 +187,6 @@ export default {
             },
           ],
         },
-        language: {
-          type: 'Radio',
-          default: '',
-          label: 'Language',
-          tooltip: 'The Language of your page',
-          src: [
-            { value: 'en', label: 'English' },
-            { value: 'ar', label: 'Arabic' },
-            { value: 'mr', label: 'Marathi' },
-          ],
-          validation: [
-            {
-              required: true,
-              message: 'Language is required',
-              trigger: 'blur',
-            },
-          ],
-        },
-        title: {
-          type: 'Input',
-          default: '',
-          label: 'Title',
-          tooltip: 'The title of page',
-          validation: [
-            {
-              required: true,
-              message: 'Title is required',
-              trigger: 'blur',
-            },
-          ],
-        },
-        content: {
-          type: 'Input',
-          default: '',
-          label: 'Content',
-          tooltip: 'The content of page',
-          validation: [],
-        },
-        activity: {
-          type: 'CheckBox',
-          default: [],
-          label: 'Activity',
-          tooltip: 'The core activity',
-          validation: [],
-          src: [
-            { value: 'da', label: 'Dance' },
-            { value: 're', label: 'Read' },
-            { value: 'py', label: 'Play' },
-          ],
-        },
-        message: {
-          type: 'MultilangInput',
-          default: '',
-          label: 'Any Message for us?',
-          tooltip: 'your message in your language',
-          langs: ['en', 'ar', 'mr'],
-        },
-        buyStatus: {
-          type: 'Boolean',
-          default: false,
-          label: 'Buy Now?',
-          tooltipMsg: 'Do you want to buy it?',
-        },
-        priceRange: {
-          type: 'Range',
-          default: [100, 300],
-          label: 'Price',
-          tooltipMsg: 'Your budget',
-          range: [0, 500],
-        },
-        ratings: {
-          type: 'Rate',
-          default: 0,
-          label: 'Rate Us',
-          tooltipMsg: 'How much do u like us?',
-        },
-        profileImage: {
-          type: 'Image',
-          label: 'Profile Image',
-          tooltipMsg: 'Your photo that is to be displayed on top',
-        },
       },
       validationRules: {},
       loading: {
@@ -160,7 +210,6 @@ export default {
         this.formData = blockData;
         this.loading.blockData = false;
       } catch (e) {
-        console.log(e);
         this.$router.push({ name: 'Page404' });
       }
     },
@@ -185,14 +234,18 @@ export default {
       );
     },
     async handleCreate() {
+      alert('before validation');
       // Todo: this stmt returns promise. Try to isolate it to one function
       this.$refs['form'].validate(valid => {
+        alert('after validation');
+        console.log(valid);
         if (valid) {
+          alert('is valid');
           axios
             .post('/api/brands/test', this.formData)
             .then(res => {
               this.$message.success('Block Added Successfully');
-              this.$refs['form'].resetFields();
+              this.setFormDataObj();
             })
             .catch(res => {
               this.$message.error(res);
