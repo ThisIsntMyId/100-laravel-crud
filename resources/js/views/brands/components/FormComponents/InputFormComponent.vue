@@ -9,7 +9,7 @@
     >
       <i class="el-icon-info" />
     </el-tooltip>
-    <el-input :value="fieldValue" @input="$emit('update:fieldValue', $event)" />
+    <el-input :value="fieldValue" :type="isTextarea ? 'textarea' : 'input'" @input="$emit('update:fieldValue', $event)" />
   </el-form-item>
 </template>
 
@@ -32,6 +32,10 @@ export default {
     fieldValue: {
       type: String,
       required: true,
+    },
+    isTextarea: {
+      type: Boolean,
+      default: false,
     },
   },
 };

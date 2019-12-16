@@ -38,11 +38,11 @@ export default {
       type: String,
       default: '',
     },
-    selectedValue: {
+    optionValue: {
       type: String,
       default: 'value',
     },
-    selectedLabel: {
+    optionLabel: {
       type: String,
       default: 'label',
     },
@@ -89,7 +89,7 @@ export default {
             },
           },
           this.src.map(item => (
-            <el-option key={item} label={item} value={item} />
+            <el-option key={item[this.optionValue] || item} label={item[this.optionLabel] || item} value={item[this.optionValue] || item} />
           ))
         )}
       </el-form-item>

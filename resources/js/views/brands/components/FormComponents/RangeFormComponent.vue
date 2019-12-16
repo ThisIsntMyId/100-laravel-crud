@@ -37,7 +37,7 @@ export default {
       default: '',
     },
     fieldValue: {
-      type: Boolean,
+      type: Array,
       required: true,
     },
     range: {

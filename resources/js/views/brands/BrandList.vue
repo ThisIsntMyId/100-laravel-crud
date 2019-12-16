@@ -142,7 +142,7 @@ export default {
           default: [],
           type: 'Select',
           label: 'Section Code',
-          src: 'section_codes',
+          src: 'section_codes',   //fills after the component is created see in line 213
           multiple: true,
         },
         language: {

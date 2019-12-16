@@ -9,8 +9,8 @@
     >
       <i class="el-icon-info" />
     </el-tooltip>
-    <!-- <el-input :value="fieldValue" @input="$emit('update:fieldValue', $event)" /> -->
     <el-upload
+      action
       list-type="picture-card"
       :on-preview="handlePictureCardPreview"
       :on-remove="handleRemove"
@@ -20,7 +20,6 @@
     >
       <i class="el-icon-plus"></i>
     </el-upload>
-    <el-button @click="$emit('update:fieldValue', myFiles)"> Go </el-button>
     <el-dialog :visible.sync="dialogVisible">
       <img width="100%" :src="dialogImageUrl" alt />
     </el-dialog>
@@ -47,6 +46,10 @@ export default {
       type: Array,
       required: true,
     },
+    onlyOne: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -56,7 +59,7 @@ export default {
     };
   },
   created() {
-    this.myFiles = fieldValue;
+    this.myFiles = this.fieldValue;
   },
   methods: {
     handleRemove(file, fileList) {
@@ -67,7 +70,12 @@ export default {
       this.dialogVisible = true;
     },
     handleUploadChange(file, fileList) {
-      this.myFiles = fileList;
+      if (this.onlyOne) {
+        this.myFiles = fileList.slice(-1);
+      } else {
+        this.myFiles = fileList;
+      }
+      this.$emit('update:fieldValue', this.myFiles);
     },
   },
   watch: {

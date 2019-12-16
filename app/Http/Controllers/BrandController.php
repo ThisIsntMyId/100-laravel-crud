@@ -95,6 +95,7 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         $data = $this->validateRequest($request);
+        dd($request);
         return Brand::create($data);
     }
 
