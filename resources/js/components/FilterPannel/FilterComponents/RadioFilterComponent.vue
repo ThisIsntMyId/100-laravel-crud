@@ -5,7 +5,12 @@
     </el-col>
     <el-col :span="12">
       <el-radio-group :value="paramValue">
-        <el-radio v-for="item in src" :key="item.value" :label="item.value"  @change="$emit('update:paramValue', item.value)" >{{item.label}}</el-radio>
+        <el-radio
+          v-for="item in src"
+          :key="item.value"
+          :label="item.value"
+          @change="$emit('update:paramValue', item.value)"
+        >{{ item.label }}</el-radio>
       </el-radio-group>
     </el-col>
     <el-col :span="4">
@@ -61,7 +66,7 @@ export default {
 </script>
 
 <style scoped>
-.el-row{
+.el-row {
   display: flex;
   align-items: center;
 }

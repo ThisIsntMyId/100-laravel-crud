@@ -9,7 +9,7 @@
     >
       <i class="el-icon-info" />
     </el-tooltip>
-    <el-rate :value="fieldValue" @change="$emit('update:fieldValue', $event)" :max="max"></el-rate>
+    <el-rate :value="fieldValue" :max="max" @change="$emit('update:fieldValue', $event)" />
   </el-form-item>
 </template>
 

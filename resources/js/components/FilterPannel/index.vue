@@ -6,7 +6,6 @@ import BooleanFilterComponent from './FilterComponents/BooleanFilterComponent';
 import RadioFilterComponent from './FilterComponents/RadioFilterComponent';
 import RangeFilterComponent from './FilterComponents/RangeFilterComponent';
 import RateFilterComponent from './FilterComponents/RateFilterComponent';
-import Resource from '@/api/resource';
 
 export default {
   name: 'FilterPannel',
@@ -23,7 +22,7 @@ export default {
     filterPannelObj: {
       type: Object,
       required: true,
-    }
+    },
   },
   data() {
     return {
@@ -103,8 +102,8 @@ export default {
     return (
       <div>
         <el-button
-          type="primary"
-          icon="el-icon-s-operation"
+          type='primary'
+          icon='el-icons-operation'
           onClick={() => {
             this.dialogVisible = true;
           }}
@@ -127,7 +126,7 @@ export default {
                 this.getFilterComponents(h, filterObj[0], filterObj[1])
               )}
             </div>,
-            <span slot="footer" class="dialog-footer">
+            <span slot='footer' class='dialog-footer'>
               <el-button
                 onClick={() => {
                   this.resetFilters();
@@ -136,7 +135,7 @@ export default {
                 Reset
               </el-button>
               <el-button
-                type="primary"
+                type='primary'
                 onClick={() => this.submitFilterParams()}
               >
                 Filter

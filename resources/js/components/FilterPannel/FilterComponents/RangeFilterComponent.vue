@@ -4,7 +4,15 @@
       <strong style="font-size: 1.5rem">{{ label }}</strong>
     </el-col>
     <el-col :span="12">
-      <el-slider :value="paramValue" @input="$emit('update:paramValue', $event)" range :max="max" :min="min" style="width: 300px;" show-input-controls></el-slider>
+      <el-slider
+        :value="paramValue"
+        range
+        :max="max"
+        :min="min"
+        style="width: 300px;"
+        show-input-controls
+        @input="$emit('update:paramValue', $event)"
+      />
     </el-col>
     <el-col :span="4">
       <div>

@@ -10,7 +10,7 @@
           :key="item.value"
           :label="item.value"
           @change="(event) => {event ? $emit('update:paramValue', [...paramValue, item.value]) : $emit('update:paramValue', [...paramValue.filter(el => el!==item.value)]);}"
-        >{{item.label}}</el-checkbox>
+        >{{ item.label }}</el-checkbox>
       </el-checkbox-group>
     </el-col>
     <el-col :span="4">
@@ -52,13 +52,12 @@ export default {
       required: true,
     },
     src: {
-        type: Array,
-        required: true,
-    }
+      type: Array,
+      required: true,
+    },
   },
   methods: {
     handleChange(event) {
-      console.log('TCL: handleChange -> event', event);
       this.$emit('update:paramValue', event);
     },
   },

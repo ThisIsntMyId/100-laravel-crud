@@ -135,14 +135,14 @@ export default {
   async created() {
     await this.getBlocksData({});
     this.allData = await BlockResource.list({ limit: -1 });
-    console.log("TCL: created -> this.allData", this.allData)
+    console.log('TCL: created -> this.allData', this.allData);
   },
   methods: {
     async getBlocksData(query) {
       this.loading.tableData = true;
       const responseData = await BlockResource.list(query);
       this.tableData = responseData.data;
-      console.log("TCL: getBlocksData -> this.tableData", this.tableData)
+      console.log('TCL: getBlocksData -> this.tableData', this.tableData);
       this.paginationData = this.pick(
         ['current_page', 'last_page', 'per_page', 'total'],
         responseData

@@ -6,12 +6,12 @@
     <el-col :span="12">
       <el-select
         :value="paramValue"
-        @change="$emit('update:paramValue', $event)"
         :placeholder="`Select ${label.toLowerCase()}`"
         :multiple="multiple"
         collapse-tags
         clearable
         style="width: 300px;"
+        @change="$emit('update:paramValue', $event)"
       >
         <el-option v-for="item in src" :key="item" :label="item" :value="item" />
       </el-select>

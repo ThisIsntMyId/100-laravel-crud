@@ -4,7 +4,7 @@
       <strong style="font-size: 1.5rem">{{ label }}</strong>
     </el-col>
     <el-col :span="12">
-      <el-rate :value="paramValue" @change="$emit('update:paramValue', $event)" :max="max"></el-rate>
+      <el-rate :value="paramValue" :max="max" @change="$emit('update:paramValue', $event)" />
     </el-col>
     <el-col :span="4">
       <div>
@@ -45,9 +45,9 @@ export default {
       required: true,
     },
     max: {
-        type: Number,
-        default: 5,
-    }
+      type: Number,
+      default: 5,
+    },
   },
 };
 </script>

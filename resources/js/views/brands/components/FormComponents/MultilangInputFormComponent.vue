@@ -2,7 +2,7 @@
 
 <template>
   <el-form-item :prop="prop">
-    <span slot="label">{{label || (prop.charAt(0).toUpperCase() + prop.slice(1))}}</span>
+    <span slot="label">{{ label || (prop.charAt(0).toUpperCase() + prop.slice(1)) }}</span>
     <span>
       <el-tooltip
         class="item"
@@ -15,7 +15,7 @@
       </el-tooltip>
     </span>
     <el-radio-group v-model="selectedLang" style="float: right;" size="small">
-      <el-radio-button v-for="lang in langs" :key="lang" :label="lang">{{lang}}</el-radio-button>
+      <el-radio-button v-for="lang in langs" :key="lang" :label="lang">{{ lang }}</el-radio-button>
     </el-radio-group>
     <el-input
       v-model="inputData[selectedLang]"
@@ -24,7 +24,7 @@
     />
   </el-form-item>
 </template>
-                 
+
 <script>
 export default {
   name: 'MultilangInputFormComponent',
@@ -60,6 +60,11 @@ export default {
       inputData: { en: '' },
     };
   },
+  watch: {
+    fieldValue(newVal, oldVal) {
+      this.inputData = JSON.parse(newVal);
+    },
+  },
   created() {
     this.inputData = JSON.parse(this.fieldValue);
   },
@@ -67,11 +72,6 @@ export default {
     handleInputUpdate() {
       const parsedData = JSON.stringify(this.inputData);
       this.$emit('update:fieldValue', parsedData);
-    },
-  },
-  watch: {
-    fieldValue(newVal, oldVal) {
-      this.inputData = JSON.parse(newVal);
     },
   },
 };

@@ -3,8 +3,8 @@
 import ElDragSelect from '@/components/DragSelect';
 
 export default {
-  components: { ElDragSelect },
   name: 'SelectFormComponent',
+  components: { ElDragSelect },
   props: {
     label: {
       type: String,
@@ -64,16 +64,16 @@ export default {
         prop={this.prop}
       >
         <el-tooltip
-          class="item"
-          effect="dark"
+          class='item'
+          effect='dark'
           content={
             this.tooltipMsg ||
             this.prop.charAt(0).toUpperCase() + this.prop.slice(1)
           }
-          placement="right"
+          placement='right'
           tabindex={-1}
         >
-          <i class="el-icon-info" />
+          <i class='el-icon-info' />
         </el-tooltip>
         {h(
           `el-${this.draggable ? 'drag-' : ''}select`,
@@ -89,7 +89,11 @@ export default {
             },
           },
           this.src.map(item => (
-            <el-option key={item[this.optionValue] || item} label={item[this.optionLabel] || item} value={item[this.optionValue] || item} />
+            <el-option
+              key={item[this.optionValue] || item}
+              label={item[this.optionLabel] || item}
+              value={item[this.optionValue] || item}
+            />
           ))
         )}
       </el-form-item>

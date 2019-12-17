@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="20" style="display: flex; align-items: center;">
       <el-col :span="10">
-        <h1 style="text-transform: capatilize;">{{resourceName}}</h1>
+        <h1 style="text-transform: capatilize;">{{ resourceName }}</h1>
       </el-col>
       <el-col :span="14" style="display: flex; justify-content: flex-end; align-items: center">
         <el-input
@@ -14,12 +14,12 @@
         />
         <FilterPannel
           style="margin: 0 10px"
+          :filter-pannel-obj="filterPannelObj"
           @set-filter="handleFilterVals"
           @reset-filter="getTableData({})"
-          :filter-pannel-obj="filterPannelObj"
         />
         <Import :url="`/api/${resourceName}/upload`" @import-success="handleImportSucces" @import-error="handleImportError" />
-        <Export :url="`/api/${resourceName}/export`" :selected-ids="selected.map(el => el.id)"/>
+        <Export :url="`/api/${resourceName}/export`" :selected-ids="selected.map(el => el.id)" />
         <el-button
           type="info"
           icon="el-icon-delete"
@@ -76,7 +76,7 @@
         </el-table-column>
         <el-table-column label="icon" prop="icon">
           <template slot-scope="scope">
-            <img :src="scope.row.icon" width="100px" height="100px" />
+            <img :src="scope.row.icon" width="100px" height="100px">
           </template>
         </el-table-column>
       </el-table>
@@ -142,7 +142,7 @@ export default {
           default: [],
           type: 'Select',
           label: 'Section Code',
-          src: 'section_codes',   //fills after the component is created see in line 213
+          src: 'section_codes', // fills after the component is created see in line 213
           multiple: true,
         },
         language: {
@@ -193,10 +193,9 @@ export default {
           label: 'Rate Us',
         },
         taxes: {
-          default: 0,
+          default: '0',
           type: 'Input',
           label: 'Taxes',
-          default: '',
         },
       },
     };
@@ -267,7 +266,7 @@ export default {
     // Filters
     async handleFilterVals(filterparams) {
       this.navigation.filters = JSON.stringify(filterparams.filters);
-      console.log("TCL: handleFilterVals -> this.navigation.filters", this.navigation.filters)
+      console.log('TCL: handleFilterVals -> this.navigation.filters', this.navigation.filters);
       this.navigation.sort = filterparams.sort.field;
       this.navigation.sort = 'name';
       this.navigation['sort-order'] = filterparams.sort.asc ? 'asc' : 'desc';
@@ -298,7 +297,7 @@ export default {
             .map(item => item.id)
             .join(',')}`
         )
-        .then(async () => {
+        .then(async() => {
           this.$message.success('Records deleted successfully');
           await this.getTableData({ page: this.paginationData.current_page });
           if (this.tableData.length === 0) {

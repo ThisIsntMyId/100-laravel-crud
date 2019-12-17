@@ -32,7 +32,7 @@ export default {
     },
     selectedIds: {
       type: Array,
-      default: [],
+      default: () => [],
     },
   },
   data() {

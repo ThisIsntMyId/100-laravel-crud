@@ -1,13 +1,12 @@
 <template>
-    <h1>view</h1>
+  <h1>view</h1>
 </template>
 
 <script>
 export default {
-    name: 'BrandView'
-}
+  name: 'BrandView',
+};
 </script>
 
 <style>
-
 </style>

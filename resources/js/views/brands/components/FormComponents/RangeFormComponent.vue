@@ -11,12 +11,12 @@
     </el-tooltip>
     <el-slider
       :value="fieldValue"
-      @input="$emit('update:fieldValue', $event)"
       range
       :min="range[0]"
       :max="range[1]"
       show-input-controls
-    ></el-slider>
+      @input="$emit('update:fieldValue', $event)"
+    />
   </el-form-item>
 </template>
 

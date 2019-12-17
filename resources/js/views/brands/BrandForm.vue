@@ -247,7 +247,7 @@ export default {
           alert('is valid');
           // TODO Remember to process the data for server before this
           const iconImg = this.formData.icon[0].raw;
-          ResourceApi.store({...this.formData, ...{icon: iconImg}})
+          ResourceApi.store({ ...this.formData, ...{ icon: iconImg }})
             .then(res => {
               this.$message.success('Block Added Successfully');
               this.setFormDataObj();
@@ -307,10 +307,10 @@ export default {
   },
   render(h) {
     return (
-      <div class="app-container">
+      <div class='app-container'>
         <h1>Block Form {this.$route.params.id}</h1>
         <el-form
-          ref="form"
+          ref='form'
           v-loading={this.loading.resourceData}
           model={this.formData}
           rules={this.validationRules}
@@ -319,16 +319,16 @@ export default {
             this.getFormComponent(h, componentObj[0], componentObj[1])
           )}
           <el-form-item>
-            <div style="display: flex; justify-content: start;">
+            <div style='display: flex; justify-content: start;'>
               <el-button
-                icon="el-icon-back"
-                type="primary"
+                icon='el-icon-back'
+                type='primary'
                 circle
                 onClick={() => this.$router.push(`/blocks`)}
               />
               <el-button
-                icon="el-icon-upload"
-                type="success"
+                icon='el-icon-upload'
+                type='success'
                 circle
                 onClick={() =>
                   this.$route.params.id
@@ -337,8 +337,8 @@ export default {
                 }
               />
               <el-button
-                icon="el-icon-refresh-left"
-                type="info"
+                icon='el-icon-refresh-left'
+                type='info'
                 circle
                 onClick={() =>
                   this.$route.params.id
@@ -348,8 +348,8 @@ export default {
               />
               {this.$route.params.id ? (
                 <el-button
-                  icon="el-icon-delete"
-                  type="danger"
+                  icon='el-icon-delete'
+                  type='danger'
                   circle
                   onClick={() => this.handleDeleteClick(this.$route.params.id)}
                 />

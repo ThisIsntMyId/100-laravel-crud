@@ -10,7 +10,7 @@
       <i class="el-icon-info" />
     </el-tooltip>
     <el-radio-group :value="fieldValue">
-      <el-radio v-for="item in src" :key="item.value" :label="item.value"  @change="$emit('update:fieldValue', item.value)" >{{item.label}}</el-radio>
+      <el-radio v-for="item in src" :key="item.value" :label="item.value" @change="$emit('update:fieldValue', item.value)">{{ item.label }}</el-radio>
     </el-radio-group>
   </el-form-item>
 </template>

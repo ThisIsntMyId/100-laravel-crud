@@ -15,7 +15,7 @@
         :key="item.value"
         :label="item.value"
         @change="(event) => {event ? $emit('update:fieldValue', [...fieldValue, item.value]) : $emit('update:fieldValue', [...fieldValue.filter(el => el!==item.value)]);}"
-      >{{item.label}}</el-checkbox>
+      >{{ item.label }}</el-checkbox>
     </el-checkbox-group>
   </el-form-item>
 </template>

@@ -18,10 +18,10 @@
       :file-list="myFiles"
       :on-change="handleUploadChange"
     >
-      <i class="el-icon-plus"></i>
+      <i class="el-icon-plus" />
     </el-upload>
     <el-dialog :visible.sync="dialogVisible">
-      <img width="100%" :src="dialogImageUrl" alt />
+      <img width="100%" :src="dialogImageUrl" alt>
     </el-dialog>
   </el-form-item>
 </template>
@@ -58,6 +58,11 @@ export default {
       myFiles: [],
     };
   },
+  watch: {
+    fieldValue(newValue, oldValue) {
+      this.myFiles = newValue;
+    },
+  },
   created() {
     this.myFiles = this.fieldValue;
   },
@@ -76,11 +81,6 @@ export default {
         this.myFiles = fileList;
       }
       this.$emit('update:fieldValue', this.myFiles);
-    },
-  },
-  watch: {
-    fieldValue(newValue, oldValue) {
-      this.myFiles = newValue;
     },
   },
 };
