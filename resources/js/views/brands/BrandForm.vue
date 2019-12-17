@@ -226,7 +226,7 @@ export default {
         const resourceData = await ResourceApi.get(id);
         // TODO Remember to preprocess data before this assingment
         this.formData = this.pick(Object.keys(this.formJson), resourceData);
-        for (let item in this.formJson) {
+        for (const item in this.formJson) {
           if (
             this.formJson[item].type === 'Image' &&
             this.formJson[item].onlyOne
@@ -258,13 +258,13 @@ export default {
     },
     // TODO Remember to rename accordingily
     generateDataToSubmit(sourceData) {
-      let formdata = new FormData();
-      for (let item in sourceData) {
+      const formdata = new FormData();
+      for (const item in sourceData) {
         if (this.formJson[item].type === 'Image') {
-          if (this.formJson[item].onlyOne)
+          if (this.formJson[item].onlyOne) {
             formdata.append(item, sourceData[item][0].raw);
-          else {
-            for (let file of sourceData[item]) {
+          } else {
+            for (const file of sourceData[item]) {
               formdata.append(`${item}[]`, file.raw);
             }
           }
@@ -355,7 +355,7 @@ export default {
   render(h) {
     return (
       <div class="app-container">
-        <h1>Block Form {this.$route.params.id}</h1>
+        <h1>{ResourseName.slice(0,1).toUpperCase() + ResourseName.slice(1,-1)} Form {this.$route.params.id ? '(Edit)' : ''}</h1>
         <el-form
           ref="form"
           v-loading={this.loading.resourceData}
@@ -371,7 +371,7 @@ export default {
                 icon="el-icon-back"
                 type="primary"
                 circle
-                onClick={() => this.$router.push(`/blocks`)}
+                onClick={() => this.$router.push(`/${ResourseName}`)}
               />
               <el-button
                 icon="el-icon-upload"
