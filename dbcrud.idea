@@ -50,7 +50,7 @@ store:
     sp_terms_title              => {en: , ar: ,}
     sp_terms                    => {en: , ar: ,}
     cb_terms                    => {en: , ar: ,}
-    secret                      => {en: , ar: ,}
+    secrets                     => {en: , ar: ,}
     h1_tag                      => {en: , ar: ,}
     h2_tag                      => {en: , ar: ,}
     meta_title                  => {en: , ar: ,}
@@ -58,7 +58,7 @@ store:
     meta_kw                     => {en: , ar: ,}
     logo                        => image => db(text => url)
     categories                  => [categories id]
-    offer_count                 => int
+    offers_count                => int
     current_cb                  => int
     amount_type                 => ['fixed', 'percent']
     rate_type                   => ['upto', 'flat']
@@ -81,6 +81,45 @@ store:
     status                      => ['publish', 'draft', 'trash']
     visits                      => int
     exclude_sitemap             => boolean
+
+id
+slug
+name
+about_store
+sp_terms_title
+sp_terms
+cb_terms
+secrets
+h1_tag
+h2_tag
+meta_title
+meta_desc
+meta_kw
+logo
+categories
+offers_count
+current_cb
+was_cb
+amount_type*
+rate_type*
+header_image
+ref_id
+homepage*
+dl_url_build
+cb_status*
+cashback_percent*
+rate_stars
+rate_count
+tracking_days
+claim_days
+clicks
+creation_mode
+network_id
+network_store_id*
+filter
+statusIndex
+visits*
+exclude_sitemap*
 
 brands:
     id                          => autoinc

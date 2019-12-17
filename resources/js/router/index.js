@@ -16,6 +16,7 @@ import Layout from '@/layout';
 import blocksRoutes from './modules/blocks';
 import brandsRoutes from './modules/brands';
 import sectionsRoutes from './modules/section';
+import storesRoutes from './modules/stores';
 import errorRoutes from './modules/error';
 
 /**
@@ -93,6 +94,7 @@ export const asyncRoutes = [
   blocksRoutes,
   brandsRoutes,
   sectionsRoutes,
+  storesRoutes,
   errorRoutes,
   {
     path: 'external-link',

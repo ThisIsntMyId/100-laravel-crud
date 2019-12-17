@@ -51,6 +51,13 @@ Route::group(['middleware' => 'api'], function () {
     Route::delete('brands/delete-multiple', 'BrandController@deleteMultiple');
     Route::apiResource('brands', 'BrandController');
 
+    // Store
+    Route::post('stores/test', 'StoreController@test');
+    Route::get('stores/export', 'StoreController@export');
+    Route::post('stores/upload', 'StoreController@upload');
+    Route::delete('stores/delete-multiple', 'StoreController@deleteMultiple');
+    Route::apiResource('stores', 'StoreController');
+
 
     // Fake APIs
     Route::get('/table/list', function () {
