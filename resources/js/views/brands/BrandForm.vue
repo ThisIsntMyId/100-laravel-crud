@@ -1,5 +1,4 @@
 // TODO Make sure you have same formData attribute name as you get from api res[ponse]
-
 <script>
 import Resource from '@/api/resource';
 const ResourseName = 'brands';
@@ -119,13 +118,14 @@ export default {
           tooltipMsg: 'Icon of the brand',
           onlyOne: true,
         },
-        headerImage: {
+        header_image: {
           type: 'Image',
           default: [],
           label: 'Header Image',
           tooltip: 'image fot the header',
+          onlyOne: true,
         },
-        recommendedStore: {
+        recom_store: {
           type: 'Input',
           default: '',
           label: 'Recommended Stores',
@@ -133,7 +133,7 @@ export default {
         },
         override_stores: {
           type: 'Boolean',
-          default: false,
+          default: 0,
           label: 'Override Store',
           validation: [
             {
@@ -162,7 +162,7 @@ export default {
         },
         exclude_sitemap: {
           type: 'Boolean',
-          default: false,
+          default: 0,
           label: 'Exclude Sitemap',
           validation: [
             {
@@ -204,20 +204,38 @@ export default {
     };
   },
   async created() {
-    // await this.getSectionCodes();
+    this.setFormDataObj();
+    this.setValidationObj();
     if (this.$route.params.id) {
       await this.getResourceData(this.$route.params.id);
     }
-    this.setFormDataObj();
-    this.setValidationObj();
   },
   methods: {
+    pick(propsArr, srcObj) {
+      return Object.keys(srcObj).reduce((obj, k) => {
+        if (propsArr.includes(k)) {
+          obj[k] = srcObj[k];
+        }
+        return obj;
+      }, {});
+    },
     async getResourceData(id) {
+      console.log('TCL: getResourceData -> this.formData', this.formData);
       try {
         this.loading.resourceData = true;
         const resourceData = await ResourceApi.get(id);
         // TODO Remember to preprocess data before this assingment
-        this.formData = resourceData;
+        this.formData = this.pick(Object.keys(this.formJson), resourceData);
+        for (let item in this.formJson) {
+          if (
+            this.formJson[item].type === 'Image' &&
+            this.formJson[item].onlyOne
+          ) {
+            this.formData[item] = [{ name: item, url: this.formData[item] }];
+          } else {
+            // TODO do something for array of image
+          }
+        }
         this.loading.resourceData = false;
       } catch (e) {
         this.$router.push({ name: 'Page404' });
@@ -238,18 +256,38 @@ export default {
         {}
       );
     },
+    // TODO Remember to rename accordingily
+    generateDataToSubmit(sourceData) {
+      let formdata = new FormData();
+      for (let item in sourceData) {
+        if (this.formJson[item].type === 'Image') {
+          if (this.formJson[item].onlyOne)
+            formdata.append(item, sourceData[item][0].raw);
+          else {
+            for (let file of sourceData[item]) {
+              formdata.append(`${item}[]`, file.raw);
+            }
+          }
+        } else {
+          formdata.append(item, sourceData[item]);
+        }
+      }
+      return formdata;
+    },
     async handleCreate() {
-      alert('before validation');
       // Todo: this stmt returns promise. Try to isolate it to one function
       this.$refs['form'].validate(valid => {
-        alert('after validation');
         if (valid) {
-          alert('is valid');
           // TODO Remember to process the data for server before this
-          const iconImg = this.formData.icon[0].raw;
-          ResourceApi.store({ ...this.formData, ...{ icon: iconImg }})
+          const dataToSubmit = this.generateDataToSubmit(this.formData);
+          axios
+            .post(`/api/${ResourseName}`, dataToSubmit, {
+              headers: {
+                'Content-Type': `multipart/form-data; boundary=${dataToSubmit._boundary}`,
+              },
+            })
             .then(res => {
-              this.$message.success('Block Added Successfully');
+              this.$message.success('Added Successfully');
               this.setFormDataObj();
             })
             .catch(res => {
@@ -264,10 +302,19 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           const id = this.$route.params.id;
+          // TODO Remember to process the data for server before this
+          console.log('TCL: handleUpdate -> this.formData', this.formData);
+          const dataToSubmit = this.generateDataToSubmit(this.formData);
+          // due to laravel not handeling formdata with put request we need to spoof the request
+          dataToSubmit.append('_method', 'put');
           axios
-            .post('/api/brands/test', this.formData)
+            .post(`/api/${ResourseName}/${id}`, dataToSubmit, {
+              headers: {
+                'Content-Type': `multipart/form-data; boundary=${dataToSubmit._boundary}`,
+              },
+            })
             .then(res => {
-              this.$message.success('Block Updated Successfully');
+              this.$message.success('Updated Successfully');
               this.getResourceData(id);
             })
             .catch(res => {
@@ -281,8 +328,8 @@ export default {
     async handleDeleteClick(id) {
       ResourceApi.destroy(id)
         .then(res => {
-          this.$message.success('Block Deleted Successfully');
-          this.$router.push(`/blocks`);
+          this.$message.success('Deleted Successfully');
+          this.$router.push(`/${ResourseName}`);
         })
         .error(err => {
           this.$message.error(err);
@@ -307,10 +354,10 @@ export default {
   },
   render(h) {
     return (
-      <div class='app-container'>
+      <div class="app-container">
         <h1>Block Form {this.$route.params.id}</h1>
         <el-form
-          ref='form'
+          ref="form"
           v-loading={this.loading.resourceData}
           model={this.formData}
           rules={this.validationRules}
@@ -319,16 +366,16 @@ export default {
             this.getFormComponent(h, componentObj[0], componentObj[1])
           )}
           <el-form-item>
-            <div style='display: flex; justify-content: start;'>
+            <div style="display: flex; justify-content: start;">
               <el-button
-                icon='el-icon-back'
-                type='primary'
+                icon="el-icon-back"
+                type="primary"
                 circle
                 onClick={() => this.$router.push(`/blocks`)}
               />
               <el-button
-                icon='el-icon-upload'
-                type='success'
+                icon="el-icon-upload"
+                type="success"
                 circle
                 onClick={() =>
                   this.$route.params.id
@@ -337,8 +384,8 @@ export default {
                 }
               />
               <el-button
-                icon='el-icon-refresh-left'
-                type='info'
+                icon="el-icon-refresh-left"
+                type="info"
                 circle
                 onClick={() =>
                   this.$route.params.id
@@ -348,8 +395,8 @@ export default {
               />
               {this.$route.params.id ? (
                 <el-button
-                  icon='el-icon-delete'
-                  type='danger'
+                  icon="el-icon-delete"
+                  type="danger"
                   circle
                   onClick={() => this.handleDeleteClick(this.$route.params.id)}
                 />

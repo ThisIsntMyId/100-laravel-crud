@@ -9,7 +9,12 @@
     >
       <i class="el-icon-info" />
     </el-tooltip>
-    <el-switch :value="fieldValue" @change="$emit('update:fieldValue', $event)" />
+    <el-switch
+      :value="fieldValue"
+      :active-value="trueValue"
+      :inactive-text="falseValue"
+      @change="$emit('update:fieldValue', $event)"
+    />
   </el-form-item>
 </template>
 
@@ -22,7 +27,7 @@ export default {
       default: '',
     },
     prop: {
-      type: String,
+      type: [String, Number, Boolean],
       required: true,
     },
     tooltipMsg: {
@@ -30,8 +35,16 @@ export default {
       default: '',
     },
     fieldValue: {
-      type: Boolean,
+      type: [String, Number, Boolean],
       required: true,
+    },
+    trueValue: {
+      type: [String, Number, Boolean],
+      default: 1,
+    },
+    falseValue: {
+      type: [String, Number, Boolean],
+      default: 0,
     },
   },
 };

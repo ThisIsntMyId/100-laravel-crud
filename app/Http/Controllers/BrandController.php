@@ -16,16 +16,18 @@ class BrandController extends Controller
         $validatedData = $request->validate([
             "name" => 'required | json',
             // "slug" => ['required','unique:brands,slug' . (($isUpdateQuery && $exists) ? ',' . $request->slug . ',slug': '')],
-            "slug" => ['nullable', 'unique:brands,slug'],
+            // "slug" => ['nullable', 'unique:brands,slug'],
+            "slug" => ['nullable'],
             "description" => 'nullable | json',
             "h1_tag" => 'nullable | json',
             "h2_tag" => 'nullable | json',
             "meta_title" => 'nullable | json',
             "meta_desc" => 'nullable | json',
             "meta_kw" => 'nullable | json',
-            // "icon" => 'nullable | image | mimes:jpeg,bmp,png,jpg',
+            // "icon" => 'nullable | mimes:jpeg,bmp,png',
             "icon" => 'nullable',
-            "header_img" => 'nullable | mimes:jpeg,bmp,png',
+            // "header_image" => 'nullable | mimes:jpeg,bmp,png',
+            "header_image" => 'nullable',
             "recom_store" => 'nullable | json',
             "override_stores" => 'required | boolean',
             "visits" => 'required | integer',
@@ -96,16 +98,8 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         $data = $this->validateRequest($request);
-        dd($request);
-        $iconPath = $request->file('icon')->store('icon');
-        $headerPath = $request->file('header_image')->store('header_image');
-        print_r($iconPath);
-        print_r($headerPath);
-        $data['icon'] = $iconPath;
-        $data['header_image'] = $headerPath;
-        // $fp = asset($iconPath);
-        // dd($fp);
-        dd($request);
+        $data['icon'] = "http://127.0.0.1:8000/storage/" . $data['icon']->store('icon', 'public');
+        $data['header_image'] = "http://127.0.0.1:8000/storage/" . $data['header_image']->store('header_image', 'public');
         return Brand::create($data);
     }
 
@@ -130,6 +124,16 @@ class BrandController extends Controller
     public function update(Request $request, Brand $brand)
     {
         $data = $this->validateRequest($request);
+        if ($data["icon"] !== 'undefined') {
+            $data['icon'] = "http://127.0.0.1:8000/storage/" . $data['icon']->store('icon', 'public');
+        } else {
+            $data['icon'] = $brand->icon;
+        }
+        if ($data["header_image"] !== 'undefined') {
+            $data['header_image'] = "http://127.0.0.1:8000/storage/" . $data['header_image']->store('header_image', 'public');
+        } else {
+            $data['header_image'] = $brand->header_image;
+        }
         $status = $brand->update($data);
         if ($status) {
             return $brand;
@@ -184,12 +188,12 @@ class BrandController extends Controller
 
     public function export(Request $request)
     {
-        
         $lang = $request->query('lang');
         return (new BrandsExport($lang))->download('BrandsExport.xlsx');
     }
 
-    public function test(Request $request) {
+    public function test(Request $request)
+    {
         dd($request->all());
     }
 }
