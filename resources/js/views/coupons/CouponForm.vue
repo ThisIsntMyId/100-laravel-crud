@@ -13,6 +13,7 @@ import BooleanFormComponent from './components/FormComponents/BooleanFormCompone
 import RangeFormComponent from './components/FormComponents/RangeFormComponent';
 import RateFormComponent from './components/FormComponents/RateFormComponent';
 import ImageFormComponent from './components/FormComponents/ImageFormComponent';
+import DateFormComponent from './components/FormComponents/DateFormComponent';
 import axios from 'axios';
 
 export default {
@@ -26,6 +27,7 @@ export default {
     RangeFormComponent,
     RateFormComponent,
     ImageFormComponent,
+    DateFormComponent,
   },
   data() {
     return {
@@ -173,10 +175,11 @@ export default {
           tooltip: 'network_store_id',
         },
         expiry_date: {
-          type: 'Input',
+          type: 'Date',
           default: '',
           label: 'Expiry Date',
           tooltip: 'Expiry Date',
+          displayFormat: 'dd-MM-yyyy',
         },
         status: {
           type: 'Radio',
