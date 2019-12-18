@@ -19,6 +19,7 @@ import sectionsRoutes from './modules/section';
 import storesRoutes from './modules/stores';
 import categoriesRoutes from './modules/categories';
 import tagsRoutes from './modules/tags';
+import couponsRoutes from './modules/coupons';
 import errorRoutes from './modules/error';
 
 /**
@@ -99,6 +100,7 @@ export const asyncRoutes = [
   storesRoutes,
   categoriesRoutes,
   tagsRoutes,
+  couponsRoutes,
   errorRoutes,
   {
     path: 'external-link',

@@ -65,12 +65,19 @@ Route::group(['middleware' => 'api'], function () {
     Route::delete('categories/delete-multiple', 'CategoryController@deleteMultiple');
     Route::apiResource('categories', 'CategoryController');
     
-    // Category
+    // Tag
     Route::post('tags/test', 'TagController@test');
     Route::get('tags/export', 'TagController@export');
     Route::post('tags/upload', 'TagController@upload');
     Route::delete('tags/delete-multiple', 'TagController@deleteMultiple');
     Route::apiResource('tags', 'TagController');
+
+    // Coupon
+    Route::post('coupons/test', 'CouponController@test');
+    Route::get('coupons/export', 'CouponController@export');
+    Route::post('coupons/upload', 'CouponController@upload');
+    Route::delete('coupons/delete-multiple', 'CouponController@deleteMultiple');
+    Route::apiResource('coupons', 'CouponController');
 
 
     // Fake APIs

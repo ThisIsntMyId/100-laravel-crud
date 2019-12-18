@@ -42,6 +42,27 @@ coupons:
     status                      => ['publish', 'draft', 'trash']
     clicks                      => int
 
+id
+title*
+store_id*
+description
+promo_text
+type*
+code
+link*
+brands
+tags
+cats
+is_featured*
+created_mode
+network_id
+network_coupon_id
+expiry_date
+status*
+clicks*
+created_at
+updated_at
+
 store:
     id                          => autoinc int
     slug                        => text
