@@ -23,7 +23,7 @@ export default {
       required: true,
     },
     src: {
-      type: [Function, Array],
+      type: Array,
       default: () => [],
     },
     multiple: {
@@ -54,11 +54,6 @@ export default {
       type: String,
       default: '300px',
     },
-  },
-  created() {
-    if(typeof this.src === 'Function') {
-      this.src = this.src();
-    }
   },
   render(h) {
     return (

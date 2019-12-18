@@ -181,3 +181,21 @@ categories:
     visits                      => int
     exclude_sitemap             => boolean
     store_count                 => int
+
+id*
+name*
+slug
+parent_id
+description
+icon
+h1_tag
+h2_tag
+meta_title
+meta_desc
+meta_kw
+recom_store
+override_stores*
+header_image
+visits*
+exclude_sitemap*
+store_count*
