@@ -162,6 +162,24 @@ tags:
     offer_count                 => int
     filter                      => {cat: [], brand: [], tags: [], store: []}
 
+slug
+parent_id
+name*
+description
+icon
+h1_tag
+h2_tag
+meta_title
+meta_desc
+header_image
+meta_kw
+is_filter*
+recom_store
+override_stores*
+visits*
+exclude_sitemap*
+offers_count*
+filter
 
 categories:
     id                          => autoinc

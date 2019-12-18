@@ -18,6 +18,7 @@ import brandsRoutes from './modules/brands';
 import sectionsRoutes from './modules/section';
 import storesRoutes from './modules/stores';
 import categoriesRoutes from './modules/categories';
+import tagsRoutes from './modules/tags';
 import errorRoutes from './modules/error';
 
 /**
@@ -97,6 +98,7 @@ export const asyncRoutes = [
   sectionsRoutes,
   storesRoutes,
   categoriesRoutes,
+  tagsRoutes,
   errorRoutes,
   {
     path: 'external-link',

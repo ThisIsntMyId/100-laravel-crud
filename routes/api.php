@@ -64,6 +64,13 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('categories/upload', 'CategoryController@upload');
     Route::delete('categories/delete-multiple', 'CategoryController@deleteMultiple');
     Route::apiResource('categories', 'CategoryController');
+    
+    // Category
+    Route::post('tags/test', 'TagController@test');
+    Route::get('tags/export', 'TagController@export');
+    Route::post('tags/upload', 'TagController@upload');
+    Route::delete('tags/delete-multiple', 'TagController@deleteMultiple');
+    Route::apiResource('tags', 'TagController');
 
 
     // Fake APIs
