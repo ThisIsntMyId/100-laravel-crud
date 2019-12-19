@@ -91,6 +91,25 @@ export const constantRoutes = [
       },
     ],
   },
+  {
+    path: '/labs',
+    component: Layout,
+    meta: { title: 'Labs', icon: 'dashboard', noCache: false },
+    children: [
+      {
+        path: '/labs/ajaxselect',
+        component: () => import('@/views/labs/ajaxselect.vue'),
+        name: 'AjasSelect',
+        meta: { title: 'Ajax Select', icon: 'dashboard', noCache: false },
+      },
+      {
+        path: '/labs',
+        component: () => import('@/views/labs/ajaxselect.vue'),
+        name: 'Ajas Select',
+        meta: { title: 'Ajax Select', icon: 'dashboard', noCache: false },
+      }
+    ]
+  },
 ];
 
 export const asyncRoutes = [

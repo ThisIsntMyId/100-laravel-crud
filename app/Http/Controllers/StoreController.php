@@ -64,6 +64,14 @@ class StoreController extends Controller
     {
         $storeQuery = new Store;
 
+        // Names
+        if (array_key_exists("name", $request->all())) {
+            return $storeQuery->where('name', 'like', '%'.$request->query('name').'%')->paginate(10);
+        }
+        // Ids
+        if (array_key_exists("ids", $request->all())) {
+            return $storeQuery->whereIn('id', json_decode('['.$request->query('ids').']'))->get();
+        }
         // Search
         $search_query = $request->query('search');
         if ($search_query) {
