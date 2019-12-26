@@ -1,5 +1,6 @@
 <?php
 
+use App\Category;
 use Illuminate\Http\Request;
 use \App\Laravue\Faker;
 use \App\Laravue\JsonResponse;
@@ -14,6 +15,12 @@ use \App\Laravue\JsonResponse;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+
+Route::get('/cats', function () {
+    $categories = Category::with('recursiveChildren')->whereNull('parent_id')->get();
+    return $categories;
+});
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();

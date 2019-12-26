@@ -45,6 +45,15 @@ class TagController extends Controller
     {
         $tagQuery = new Tag;
 
+        // Names
+        if (array_key_exists("mname", $request->all())) {
+            return $tagQuery->where('name', 'like', '%'.$request->query('mname').'%')->take(10)->get();
+        }
+        // Ids
+        if (array_key_exists("mids", $request->all())) {
+            return $tagQuery->whereIn('id', json_decode('['.$request->query('mids').']'))->get();
+        }
+
         // Search
         $search_query = $request->query('search');
         if ($search_query) {

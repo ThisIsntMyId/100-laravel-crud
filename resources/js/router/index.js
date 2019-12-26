@@ -103,10 +103,16 @@ export const constantRoutes = [
         meta: { title: 'Ajax Select', icon: 'dashboard', noCache: false },
       },
       {
-        path: '/labs',
-        component: () => import('@/views/labs/ajaxselect.vue'),
-        name: 'Ajas Select',
-        meta: { title: 'Ajax Select', icon: 'dashboard', noCache: false },
+        path: '/labs/ajaxselectWrapper',
+        component: () => import('@/views/labs/ajaxselectWrapper.vue'),
+        name: 'AjasSelectWrapper',
+        meta: { title: 'Ajax Select Wrapper', icon: 'dashboard', noCache: false },
+      },
+      {
+        path: '/labs/form',
+        component: () => import('@/views/labs/Form.vue'),
+        name: 'Form',
+        meta: { title: 'Form', icon: 'dashboard', noCache: false },
       }
     ]
   },

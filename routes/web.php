@@ -11,8 +11,16 @@
 |
 */
 
+use App\Category;
+
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/cats', function () {
+    $categories = Category::with('recursiveChildren')->whereNull('parent_id')->get();
+    // return $categories;
+    return view('cats', ['categories' => $categories]);
 });
 
 Route::group(['middleware' => 'web'], function () {
