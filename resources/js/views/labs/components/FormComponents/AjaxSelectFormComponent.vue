@@ -74,11 +74,13 @@ export default {
     return {
       options: [],
       currentlang: 'en',
+      oldFieldValue: [],
     };
   },
   async created() {
     this.currentlang = this.$store.state.app.language;
     await this.initializeOpttions();
+    this.oldFieldValue = this.fieldValue;
   },
   methods: {
     async initializeOpttions() {
@@ -133,7 +135,10 @@ export default {
   },
   watch: {
     async currentlang() {
-      await this.initializeOpttions();
+      if (this.fieldValue != this.oldFieldValue) {
+        await this.initializeOpttions();
+        this.oldFieldValue = this.fieldValue;
+      }
     },
   },
   render(h) {
