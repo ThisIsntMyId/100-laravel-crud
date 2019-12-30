@@ -4,16 +4,17 @@ import Resource from '@/api/resource';
 const ResourseName = 'coupons';
 const ResourceApi = new Resource(ResourseName);
 
-import InputFormComponent from './components/FormComponents/InputFormComponent';
-import RadioFormComponent from './components/FormComponents/RadioFormComponent';
-import CheckBoxFormComponent from './components/FormComponents/CheckBoxFormComponent';
-import SelectFormComponent from './components/FormComponents/SelectFormComponent';
-import MultilangInputFormComponent from './components/FormComponents/MultilangInputFormComponent';
-import BooleanFormComponent from './components/FormComponents/BooleanFormComponent';
-import RangeFormComponent from './components/FormComponents/RangeFormComponent';
-import RateFormComponent from './components/FormComponents/RateFormComponent';
-import ImageFormComponent from './components/FormComponents/ImageFormComponent';
-import DateFormComponent from './components/FormComponents/DateFormComponent';
+import InputFormComponent from '@/components/FormComponents/InputFormComponent';
+import RadioFormComponent from '@/components/FormComponents/RadioFormComponent';
+import CheckBoxFormComponent from '@/components/FormComponents/CheckBoxFormComponent';
+import SelectFormComponent from '@/components/FormComponents/SelectFormComponent';
+import MultilangInputFormComponent from '@/components/FormComponents/MultilangInputFormComponent';
+import BooleanFormComponent from '@/components/FormComponents/BooleanFormComponent';
+import RangeFormComponent from '@/components/FormComponents/RangeFormComponent';
+import RateFormComponent from '@/components/FormComponents/RateFormComponent';
+import ImageFormComponent from '@/components/FormComponents/ImageFormComponent';
+import DateFormComponent from '@/components/FormComponents/DateFormComponent';
+import AjaxSelectFormComponent from '@/components/FormComponents/AjaxSelectFormComponent';
 import axios from 'axios';
 
 export default {
@@ -27,6 +28,7 @@ export default {
     RangeFormComponent,
     RateFormComponent,
     ImageFormComponent,
+    AjaxSelectFormComponent,
     DateFormComponent,
   },
   data() {
@@ -52,13 +54,18 @@ export default {
           ],
         },
         store_id: {
-          type: 'Select',
+          type: 'AjaxSelect',
           default: '',
-          label: 'Store',
-          tooltip: 'Store to which the coupon belongs',
-          src: [],
+          label: 'Ajax Store',
+          tooltip: 'Ajax Store to which the coupon belongs',
           optionValue: 'id',
           optionLabel: 'name',
+          initializeurl: '/api/stores?ids',
+          searchUrl: '/api/stores?name',
+          multilang: true,
+          langs: ['en', 'ar'],
+          // multiple: true,
+          // draggable: true,
         },
         description: {
           type: 'MultilangInput',
@@ -119,37 +126,46 @@ export default {
           ],
         },
         brands: {
-          type: 'Select',
+          type: 'AjaxSelect',
           default: '',
-          label: 'Brands',
-          tooltip: 'Brands to which coupon belongs',
-          src: [],
-          multiple: true,
-          draggable: true,
+          label: 'Ajax Brands',
+          tooltip: 'Brands to which the coupon belongs',
           optionValue: 'id',
           optionLabel: 'name',
+          initializeurl: '/api/brands?ids',
+          searchUrl: '/api/brands?name',
+          multilang: true,
+          langs: ['en', 'ar'],
+          multiple: true,
+          draggable: true,
         },
         tags: {
-          type: 'Select',
+          type: 'AjaxSelect',
           default: '',
-          label: 'Tags',
-          tooltip: 'tags of the',
-          src: [],
-          multiple: true,
-          draggable: true,
+          label: 'Ajax Tags',
+          tooltip: 'Ajax Tags applicable to the coupon',
           optionValue: 'id',
           optionLabel: 'name',
+          initializeurl: '/api/tags?mids',
+          searchUrl: '/api/tags?mname',
+          multilang: true,
+          langs: ['en', 'ar'],
+          multiple: true,
+          draggable: true,
         },
         cats: {
-          type: 'Select',
+          type: 'AjaxSelect',
           default: '',
-          label: 'Category of the coupon',
-          tooltip: 'Brands to which coupon belongs',
-          src: [],
-          multiple: true,
-          draggable: true,
+          label: 'Ajax Categories',
+          tooltip: 'Categories to which the coupon belongs',
           optionValue: 'id',
           optionLabel: 'name',
+          initializeurl: '/api/categories?ids',
+          searchUrl: '/api/categories?name',
+          multilang: true,
+          langs: ['en', 'ar'],
+          multiple: true,
+          draggable: true,
         },
         is_featured: {
           type: 'Boolean',
@@ -221,34 +237,6 @@ export default {
     if (this.$route.params.id) {
       await this.getResourceData(this.$route.params.id);
     }
-    // To get brands
-    this.formJson.brands.src = (await axios.get(
-      `/api/brands?limit=-1`
-    )).data.map(({ name, id }) => ({
-      name: JSON.parse(name)[this.$store.state.app.language],
-      id,
-    }));
-    // To get tags
-    this.formJson.tags.src = (await axios.get(
-      `/api/tags?limit=-1`
-    )).data.map(({ name, id }) => ({
-      name: JSON.parse(name)[this.$store.state.app.language],
-      id,
-    }));
-    // To get categories
-    this.formJson.cats.src = (await axios.get(
-      `/api/categories?limit=-1`
-    )).data.map(({ name, id }) => ({
-      name: JSON.parse(name)[this.$store.state.app.language],
-      id,
-    }));
-    // To get stores
-    this.formJson.store_id.src = (await axios.get(
-      `/api/stores?limit=-1`
-    )).data.map(({ name, id }) => ({
-      name: JSON.parse(name)[this.$store.state.app.language],
-      id,
-    }));
   },
   methods: {
     pick(propsArr, srcObj) {
@@ -268,6 +256,7 @@ export default {
         for (const item in this.formJson) {
           if (this.formData[item]) {
             switch (this.formJson[item].type) {
+              case 'AjaxSelect':
               case 'Select': {
                 if (this.formJson[item].multiple === true) {
                   this.formData[item] = JSON.parse(this.formData[item]);
@@ -324,7 +313,7 @@ export default {
             }
           }
         } else if (
-          this.formJson[item].type === 'Select' &&
+          (this.formJson[item].type === 'Select' || this.formJson[item].type === 'AjaxSelect') &&
           this.formJson[item].multiple
         ) {
           formdata.append(item, JSON.stringify(sourceData[item]));

@@ -47,6 +47,15 @@ class BrandController extends Controller
     {
         $brandQuery = new Brand;
 
+        // Names
+        if (array_key_exists("name", $request->all())) {
+            return $brandQuery->where('name', 'like', '%'.$request->query('name').'%')->take(10)->get();
+        }
+        // Ids
+        if (array_key_exists("ids", $request->all())) {
+            return $brandQuery->whereIn('id', json_decode('['.$request->query('ids').']'))->get();
+        }
+
         // Search
         $search_query = $request->query('search');
         if ($search_query) {

@@ -69,19 +69,26 @@
         </el-table-column>
         <el-table-column
           v-for="field in fieldsToShow"
-          :key="field"
-          :prop="field"
-          :label="field.replace('_',' ')"
+          :key="field.name"
+          :prop="field.name"
+          :label="field.name.replace('_',' ')"
           sortable="custom"
         >
           <template slot-scope="scope">
-            <div class="cell">{{ getLangValues(scope.row[field]) }}</div>
-          </template>
-        </el-table-column>
-        <!-- some custom fields -->
-        <el-table-column label="icon" prop="icon">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.type === 'coupon' ? 'success' : 'primary'">{{ scope.row.type }}</el-tag>
+            <div
+              v-if="field.type=='multilangtext'"
+              class="cell"
+            >{{ JSON.parse(scope.row[field.name])[$store.state.app.language] }}</div>
+            <div v-if="field.type=='text'" class="cell">{{ scope.row[field.name] }}</div>
+            <el-tag v-if="field.type=='tag'">{{ scope.row.type }}</el-tag>
+            <img v-if="field.type=='image'" :src="scope.row.icon" width="100px" height="100px" />
+            <div v-if="field.type=='oneFrom'" class="cell">
+              <el-tag :key="scope.row[field.name]">{{scope.row[field.name]}}{{setRelatedFieldName(scope.row.id, field)}}</el-tag>
+            </div>
+            <div v-if="field.type=='manyFrom'" class="cell">{{ scope.row[field.name] }}</div>
+            <div v-if="field.type=='boolean'" class="cell">
+              <el-switch> </el-switch>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -121,7 +128,24 @@ export default {
       resourceName: resourceName,
       language: 'en',
       tableData: [],
-      fieldsToShow: ['title', 'description', 'code', 'expiry_date'],
+      fieldsToShow: [
+        { name: 'title', type: 'multilangtext' },
+        { name: 'description', type: 'multilangtext' },
+        { name: 'code', type: 'text' },
+        { name: 'expiry_date', type: 'text' },
+        { name: 'type', type: 'tag' },
+        {
+          name: 'store_id',
+          type: 'oneFrom',
+          url: '/api/stores/',
+          attrName: 'name',
+          multilang: true,
+        },
+        // { name: 'brands', type: 'manyFrom', url: '/api/brands/', attrName: 'name', multilang: true, },
+        { name: 'brands', type: 'text' },
+        { name: 'is_featured', type: 'boolean' },
+        { name: 'status', type: 'text' },
+      ],
       paginationData: {
         current_page: 0,
         last_page: 0,
@@ -264,11 +288,11 @@ export default {
         return obj;
       }, {});
     },
-    getLangValues(str) {
-      if (/\{.*\}/.test(str)) {
-        return JSON.parse(str)[this.$store.state.app.language];
-      } else {
-        return str;
+    // ? remember to refactor the parameter id
+    async setRelatedFieldName(tableRow, {name, url, attrName, multilang }) {
+      tableRow[name] = (await axios.get(`${url}${id}`)).data[attrName];
+      if(multilang) {
+        tableRow[name] = JSON.parse(tableRow[name]);
       }
     },
     // Sort

@@ -205,7 +205,7 @@ export default {
           optionsObject,
           this.options.map(item => (
             <el-option
-              key={item[this.optionValue] || item[this.optionValue] || item}
+              key={this.multilang && `${item[this.optionValue]}-${this.currentlang}` || item[this.optionValue] || item}
               label={
                 item[this.optionLabel][this.currentlang] ||
                 item[this.optionLabel] ||

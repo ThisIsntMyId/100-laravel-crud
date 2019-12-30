@@ -43,6 +43,15 @@ class CategoryController extends Controller
     {
         $categoryQuery = new Category;
 
+        // Names
+        if (array_key_exists("name", $request->all())) {
+            return $categoryQuery->where('name', 'like', '%'.$request->query('name').'%')->take(10)->get();
+        }
+        // Ids
+        if (array_key_exists("ids", $request->all())) {
+            return $categoryQuery->whereIn('id', json_decode('['.$request->query('ids').']'))->get();
+        }
+
         // Search
         $search_query = $request->query('search');
         if ($search_query) {

@@ -65,8 +65,8 @@ export default {
         store_id2: {
           type: 'AjaxSelect',
           // default: [],
-          // default: 6856, //TODO check when customMapperFunction is brought in this object its not working
-          default: [29910, 35611, 9116, 28425, 2473, 6518],
+          default: 35611, //TODO check when customMapperFunction is brought in this object its not working
+          // default: [29910, 35611, 9116, 28425, 2473, 6518],
           label: 'Ajax Store',
           tooltip: 'Ajax Store to which the coupon belongs',
           optionValue: 'id',
@@ -75,8 +75,8 @@ export default {
           searchUrl: '/api/stores?name',
           multilang: true,
           langs: ['en', 'ar'],
-          multiple: true,
-          draggable: true,
+          // multiple: true,
+          // draggable: true,
           // optionValue: 'myId',
           // optionLabel: 'myName',
           // customMapFunction: myMapper,
@@ -89,11 +89,13 @@ export default {
           tooltip: 'Ajax tag to which the coupon belongs',
           optionValue: 'id',
           optionLabel: 'name',
-          initializeurl: '',
-          searchUrl: '',
+          initializeurl: '/api/tags?mids',
+          searchUrl: '/api/tags?mname',
+          multilang: true,
+          langs: ['en', 'ar'],
           multiple: true,
           draggable: true,
-          customDataFunction: myDataFn
+          // customDataFunction: myDataFn
         },
         fruits: {
           type: 'Select',
