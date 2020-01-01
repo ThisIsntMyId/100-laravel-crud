@@ -80,5 +80,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.el-tag{
+  height: auto;
+  white-space: pre-wrap;
+}
 </style>
