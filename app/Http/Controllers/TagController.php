@@ -53,6 +53,10 @@ class TagController extends Controller
         if (array_key_exists("mids", $request->all())) {
             return $tagQuery->whereIn('id', json_decode('['.$request->query('mids').']'))->get();
         }
+        // Ids
+        if (array_key_exists("idsarr", $request->all())) {
+            return $tagQuery->whereIn('id', json_decode($request->query('idsarr')))->get();
+        }
 
         // Search
         $search_query = $request->query('search');

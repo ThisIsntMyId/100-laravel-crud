@@ -55,6 +55,10 @@ class BrandController extends Controller
         if (array_key_exists("ids", $request->all())) {
             return $brandQuery->whereIn('id', json_decode('['.$request->query('ids').']'))->get();
         }
+        // Ids
+        if (array_key_exists("idsarr", $request->all())) {
+            return $brandQuery->whereIn('id', json_decode($request->query('idsarr')))->get();
+        }
 
         // Search
         $search_query = $request->query('search');

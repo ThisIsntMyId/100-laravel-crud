@@ -53,11 +53,13 @@
                 @click="$router.push(`/${resourceName}/view/${scope.row.id}`)"
               />
               <el-button
-                icon="el-icon-edit"
-                type="success"
+                :key="scope.row.id + 'switch'"
+                :icon="scope.row.edited ? 'el-icon-upload' : 'el-icon-edit'"
+                :type="scope.row.edited ? 'info' : 'success'"
                 circle
-                @click="$router.push(`/${resourceName}/edit/${scope.row.id}`)"
+                @click="scope.row.edited ? handleSaveClick(scope.row) : $router.push(`/${resourceName}/edit/${scope.row.id}`)"
               />
+
               <el-button
                 icon="el-icon-delete"
                 type="danger"
@@ -83,11 +85,35 @@
             <el-tag v-if="field.type=='tag'">{{ scope.row.type }}</el-tag>
             <img v-if="field.type=='image'" :src="scope.row.icon" width="100px" height="100px" />
             <div v-if="field.type=='oneFrom'" class="cell">
-              <el-tag :key="scope.row[field.name]">{{scope.row[field.name]}}{{setRelatedFieldName(scope.row.id, field)}}</el-tag>
+              <async-tags
+                :is-single="true"
+                :url="field.url"
+                :ids="scope.row[field.name]"
+                :required-attr="field.attrName"
+                :is-multi-lang="true"
+              ></async-tags>
             </div>
-            <div v-if="field.type=='manyFrom'" class="cell">{{ scope.row[field.name] }}</div>
+            <div v-if="field.type=='manyFrom'" class="cell">
+              <async-tags
+                :is-single="false"
+                :url="field.url"
+                :ids="scope.row[field.name]"
+                :required-attr="field.attrName"
+                :is-multi-lang="true"
+              ></async-tags>
+            </div>
             <div v-if="field.type=='boolean'" class="cell">
-              <el-switch> </el-switch>
+              <t-switch
+                :external-value="scope.row[field.name]"
+                @switchchanged="event => handleInlineChange(event, scope.row.id, field)"
+              />
+            </div>
+            <div v-if="field.type=='select'" class="cell">
+              <t-select
+                :external-value="scope.row[field.name]"
+                :options="field.options"
+                @selectchanged="event => handleInlineChange(event, scope.row.id, field)"
+              />
             </div>
           </template>
         </el-table-column>
@@ -114,6 +140,9 @@ import axios from 'axios';
 import Resource from '@/api/resource';
 const resourceName = 'coupons';
 const ResourceApi = new Resource(resourceName);
+import TSwitch from './components/TSwitch';
+import TSelect from './components/TSelect';
+import AsyncTags from './components/AsyncTags';
 
 export default {
   name: 'CategoryList',
@@ -122,17 +151,21 @@ export default {
     FilterPannel,
     Export,
     Import,
+    TSwitch,
+    TSelect,
+    AsyncTags,
   },
   data() {
     return {
       resourceName: resourceName,
       language: 'en',
       tableData: [],
+      fieldData: {},
       fieldsToShow: [
         { name: 'title', type: 'multilangtext' },
-        { name: 'description', type: 'multilangtext' },
+        // { name: 'description', type: 'multilangtext' },
         { name: 'code', type: 'text' },
-        { name: 'expiry_date', type: 'text' },
+        // { name: 'expiry_date', type: 'text' },
         { name: 'type', type: 'tag' },
         {
           name: 'store_id',
@@ -141,10 +174,26 @@ export default {
           attrName: 'name',
           multilang: true,
         },
-        // { name: 'brands', type: 'manyFrom', url: '/api/brands/', attrName: 'name', multilang: true, },
-        { name: 'brands', type: 'text' },
-        { name: 'is_featured', type: 'boolean' },
-        { name: 'status', type: 'text' },
+        {
+          name: 'tags',
+          type: 'manyFrom',
+          url: '/api/tags?idsarr=',
+          attrName: 'name',
+          multilang: true,
+        },
+        {
+          name: 'brands',
+          type: 'manyFrom',
+          url: '/api/brands?idsarr=',
+          attrName: 'name',
+          multilang: true,
+        },
+        { name: 'is_featured', type: 'boolean', prerender: true },
+        {
+          name: 'status',
+          type: 'select',
+          options: ['publish', 'draft', 'trash'],
+        },
       ],
       paginationData: {
         current_page: 0,
@@ -234,38 +283,56 @@ export default {
   },
   async created() {
     await this.getTableData({});
-    this.allData = await ResourceApi.list({ limit: -1 });
+    // this.allData = await ResourceApi.list({ limit: -1 });
 
-    // To get brands
-    this.filterPannelObj.brands.src = (await axios.get(
-      `/api/brands?limit=-1`
-    )).data.map(({ name, id }) => ({
-      label: JSON.parse(name)[this.$store.state.app.language],
-      value: id,
-    }));
-    // To get tags
-    this.filterPannelObj.tags.src = (await axios.get(
-      `/api/tags?limit=-1`
-    )).data.map(({ name, id }) => ({
-      label: JSON.parse(name)[this.$store.state.app.language],
-      value: id,
-    }));
-    // To get categories
-    this.filterPannelObj.cats.src = (await axios.get(
-      `/api/categories?limit=-1`
-    )).data.map(({ name, id }) => ({
-      label: JSON.parse(name)[this.$store.state.app.language],
-      value: id,
-    }));
-    // To get stores
-    this.filterPannelObj.store_id.src = (await axios.get(
-      `/api/stores?limit=-1`
-    )).data.map(({ name, id }) => ({
-      label: JSON.parse(name)[this.$store.state.app.language],
-      value: id,
-    }));
+    // // to fill filter dialog selects
+    // // To get brands
+    // this.filterPannelObj.brands.src = (await axios.get(
+    //   `/api/brands?limit=-1`
+    // )).data.map(({ name, id }) => ({
+    //   label: JSON.parse(name)[this.$store.state.app.language],
+    //   value: id,
+    // }));
+    // // To get tags
+    // this.filterPannelObj.tags.src = (await axios.get(
+    //   `/api/tags?limit=-1`
+    // )).data.map(({ name, id }) => ({
+    //   label: JSON.parse(name)[this.$store.state.app.language],
+    //   value: id,
+    // }));
+    // // To get categories
+    // this.filterPannelObj.cats.src = (await axios.get(
+    //   `/api/categories?limit=-1`
+    // )).data.map(({ name, id }) => ({
+    //   label: JSON.parse(name)[this.$store.state.app.language],
+    //   value: id,
+    // }));
+    // // To get stores
+    // this.filterPannelObj.store_id.src = (await axios.get(
+    //   `/api/stores?limit=-1`
+    // )).data.map(({ name, id }) => ({
+    //   label: JSON.parse(name)[this.$store.state.app.language],
+    //   value: id,
+    // }));
   },
   methods: {
+    handleInlineChange(event, id, field) {
+      const element = this.tableData.filter(data => data.id === id)[0];
+      element[field.name] = event;
+      this.$set(element, 'edited', true);
+    },
+    handleSaveClick(editedData, field) {
+      alert('from save clik');
+      console.log(editedData);
+      // this.tableData.filter(data => data.id === editedData.id)[0]
+      // I dont want to refetch the store ids, tags ids and brand ids
+      this.$set(
+        this.tableData.filter(data => data.id === editedData.id)[0],
+        'edited',
+        false
+      );
+      alert('edited');
+    },
     async getTableData(query) {
       this.loading.tableData = true;
       const responseData = await ResourceApi.list(query);
@@ -287,13 +354,6 @@ export default {
         }
         return obj;
       }, {});
-    },
-    // ? remember to refactor the parameter id
-    async setRelatedFieldName(tableRow, {name, url, attrName, multilang }) {
-      tableRow[name] = (await axios.get(`${url}${id}`)).data[attrName];
-      if(multilang) {
-        tableRow[name] = JSON.parse(tableRow[name]);
-      }
     },
     // Sort
     async handleSortChange(change) {
