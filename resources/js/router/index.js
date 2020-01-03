@@ -113,7 +113,19 @@ export const constantRoutes = [
         component: () => import('@/views/labs/Form.vue'),
         name: 'Form',
         meta: { title: 'Form', icon: 'dashboard', noCache: false },
-      }
+      },
+      {
+        path: '/labs/mediamanager',
+        component: () => import('@/views/labs/MediaManager.vue'),
+        name: 'Media Manager',
+        meta: { title: 'Media Manager', icon: 'dashboard', noCache: false },
+      },
+      {
+        path: '/labs/mediamanagercomponents',
+        component: () => import('@/views/labs/MediaManagerComponents.vue'),
+        name: 'Media Manager Component',
+        meta: { title: 'Media Manager Component', icon: 'dashboard', noCache: false },
+      },
     ]
   },
 ];

@@ -1,6 +1,11 @@
 <template>
   <div class="navbar">
-    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <hamburger
+      id="hamburger-container"
+      :is-active="sidebar.opened"
+      class="hamburger-container"
+      @toggleClick="toggleSideBar"
+    />
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
@@ -19,24 +24,18 @@
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'/128'" class="user-avatar">
+          <img :src="avatar+'/128'" class="user-avatar" />
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/">
-            <el-dropdown-item>
-              {{ $t('navbar.dashboard') }}
-            </el-dropdown-item>
+            <el-dropdown-item>{{ $t('navbar.dashboard') }}</el-dropdown-item>
           </router-link>
           <router-link v-show="userId !== null" :to="`/administrator/users/edit/${userId}`">
-            <el-dropdown-item>
-              {{ $t('navbar.profile') }}
-            </el-dropdown-item>
+            <el-dropdown-item>{{ $t('navbar.profile') }}</el-dropdown-item>
           </router-link>
           <a target="_blank" href="https://github.com/tuandm/laravue/">
-            <el-dropdown-item>
-              {{ $t('navbar.github') }}
-            </el-dropdown-item>
+            <el-dropdown-item>{{ $t('navbar.github') }}</el-dropdown-item>
           </a>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">{{ $t('navbar.logOut') }}</span>
@@ -66,13 +65,7 @@ export default {
     Search,
   },
   computed: {
-    ...mapGetters([
-      'sidebar',
-      'name',
-      'avatar',
-      'device',
-      'userId',
-    ]),
+    ...mapGetters(['sidebar', 'name', 'avatar', 'device', 'userId']),
   },
   methods: {
     toggleSideBar() {
@@ -92,18 +85,20 @@ export default {
   overflow: hidden;
   position: relative;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  display: block;
+  padding: 0;
 
   .hamburger-container {
     line-height: 46px;
     height: 100%;
     float: left;
     cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+    transition: background 0.3s;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover {
-      background: rgba(0, 0, 0, .025)
+      background: rgba(0, 0, 0, 0.025);
     }
   }
 
@@ -135,10 +130,10 @@ export default {
 
       &.hover-effect {
         cursor: pointer;
-        transition: background .3s;
+        transition: background 0.3s;
 
         &:hover {
-          background: rgba(0, 0, 0, .025)
+          background: rgba(0, 0, 0, 0.025);
         }
       }
     }
@@ -155,6 +150,7 @@ export default {
           width: 40px;
           height: 40px;
           border-radius: 4px;
+          vertical-align: text-bottom;
         }
 
         .el-icon-caret-bottom {
