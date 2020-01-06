@@ -25,7 +25,7 @@
     <el-select multiple v-model="value3" value-key="id">
       <el-option v-for="fruit in option3" :key="fruit.id" :value="fruit" :label="fruit.name"></el-option>
     </el-select>
-    <template v-for="(type) in ['primary', 'info', 'danger']"> <component :key="type" :is="randomeHtmlElement(option3[0].name, type)" @fromello="fromHello"></component> </template>
+    <template v-for="(type) in ['primary', 'success', 'info', 'warning', 'danger']"> <component :key="type" :is="randomeHtmlElement(option3[0].name, type)" @fromello="fromHello"></component> </template>
   </div>
 </template>
 

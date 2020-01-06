@@ -56,7 +56,7 @@ class CouponController extends Controller
         $filters = $request->query('filters');
         if ($filters) {
             // dd('skipped for now');
-            $couponQuery = $couponQuery->where('visits', '>', 80);
+            $couponQuery = $couponQuery->where('clicks', '>', 80);
             // $filters = json_decode($filters, true);
             // foreach ($filters as $key => $filter) {
             //     if (is_array($filter)) {

@@ -1,22 +1,26 @@
 <script>
 import InputFilterComponent from './FilterComponents/InputFilterComponent';
 import SelectFilterComponent from './FilterComponents/SelectFilterComponent';
+import AsyncSelectFilterComponent from './FilterComponents/AsyncSelectFilterComponent';
 import CheckBoxFilterComponent from './FilterComponents/CheckBoxFilterComponent';
 import BooleanFilterComponent from './FilterComponents/BooleanFilterComponent';
 import RadioFilterComponent from './FilterComponents/RadioFilterComponent';
 import RangeFilterComponent from './FilterComponents/RangeFilterComponent';
 import RateFilterComponent from './FilterComponents/RateFilterComponent';
+import DateTimeFilterComponent from './FilterComponents/DateTimeFilterComponent';
 
 export default {
   name: 'FilterPannel',
   components: {
     InputFilterComponent,
     SelectFilterComponent,
+    AsyncSelectFilterComponent,
     CheckBoxFilterComponent,
     BooleanFilterComponent,
     RadioFilterComponent,
     RangeFilterComponent,
     RateFilterComponent,
+    DateTimeFilterComponent,
   },
   props: {
     filterPannelObj: {
