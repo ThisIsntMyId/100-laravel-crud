@@ -25,6 +25,7 @@
     <el-select multiple v-model="value3" value-key="id">
       <el-option v-for="fruit in option3" :key="fruit.id" :value="fruit" :label="fruit.name"></el-option>
     </el-select>
+    <template v-for="(type) in ['primary', 'info', 'danger']"> <component :key="type" :is="randomeHtmlElement(option3[0].name, type)" @fromello="fromHello"></component> </template>
   </div>
 </template>
 
@@ -39,7 +40,7 @@ export default {
       options2: [],
       value: [1683, 42344, 1689, 1951, 2028, 29910, 1922],
       value2: [1732, 1689, 2028, 1951, 1922],
-      value31: [1,2],
+      value31: [1, 2],
       value3: [
         {
           id: 1,
@@ -87,12 +88,27 @@ export default {
       }));
     }
   },
+  computed: {},
   watch: {
     value(newVal, oldVal) {
       this.options1 = [];
     },
   },
   methods: {
+    fromHello(event) {
+      alert(`event from new component => ${event}`);
+    },
+    randomeHtmlElement(name, type) {
+      return {
+        template: `<el-button type="${type}" @click='helloClicked'>Hello from computed ${name}</el-button>`,
+        methods: {
+          helloClicked() {
+            alert(`from hello clicked => ${type}`);
+            this.$emit('fromello', name.toUpperCase());
+          },
+        },
+      };
+    },
     async remoteMethod(input) {
       if (input.length > 0) {
         let existingData;
