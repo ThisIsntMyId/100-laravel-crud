@@ -80,8 +80,13 @@
             <div
               v-if="field.type=='multilangtext'"
               class="cell"
-            >{{ JSON.parse(scope.row[field.name])[$store.state.app.language] }}</div>
-            <div v-if="field.type=='text'" class="cell">{{ scope.row[field.name] }}</div>
+              
+            >{{ JSON.parse(scope.row[field.name])[$store.state.app.language] | searchFilter(navigation.search) }}</div>
+            <div
+              v-if="field.type=='text'"
+              class="cell"
+              
+            >{{ scope.row[field.name] | searchFilter(navigation.search) }}</div>
             <div v-if="field.type=='editabletext'" class="cell">
               <t-edit-text
                 :external-value="scope.row[field.name]"
@@ -163,6 +168,19 @@ export default {
     AsyncTags,
     TEditText,
   },
+  filters: {
+    searchFilter(str, query) {
+      let searchRegex = query ? new RegExp(query, 'ig') : '';
+      if (str && query) {
+        return str.replace(
+          searchRegex,
+          "<span class='highlight'>" + query + '</span>'
+        );
+      } else {
+        return str;
+      }
+    },
+  },
   data() {
     return {
       resourceName: resourceName,
@@ -171,7 +189,7 @@ export default {
       fieldData: {},
       fieldsToShow: [
         { name: 'title', type: 'multilangtext' },
-        // { name: 'description', type: 'multilangtext' },
+        { name: 'description', type: 'multilangtext' },
         { name: 'code', type: 'text' },
         { name: 'code', type: 'editabletext' },
         // { name: 'expiry_date', type: 'text' },
@@ -313,7 +331,12 @@ export default {
   methods: {
     handleInlineChange(event, id, field) {
       // alert("in inline change");
-      console.log("TCL: handleInlineChange -> event, id, field", event, id, field)
+      console.log(
+        'TCL: handleInlineChange -> event, id, field',
+        event,
+        id,
+        field
+      );
       const element = this.tableData.filter(data => data.id === id)[0];
       element[field.name] = event;
       this.$set(element, 'edited', true);
@@ -434,4 +457,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.highlight {
+  background-color: yellow;
+}
 </style>

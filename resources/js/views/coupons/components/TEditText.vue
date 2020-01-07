@@ -7,8 +7,8 @@ export default {
   name: 'TEditText',
   props: {
     externalValue: {
-      type: [String, Number],
       required: true,
+      validator: prop => typeof prop === 'string' || typeof prop === 'number' || prop === null
     },
   },
   data() {
