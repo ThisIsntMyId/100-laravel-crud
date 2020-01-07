@@ -82,6 +82,12 @@
               class="cell"
             >{{ JSON.parse(scope.row[field.name])[$store.state.app.language] }}</div>
             <div v-if="field.type=='text'" class="cell">{{ scope.row[field.name] }}</div>
+            <div v-if="field.type=='editabletext'" class="cell">
+              <t-edit-text
+                :external-value="scope.row[field.name]"
+                @textchanged="event => handleInlineChange(event, scope.row.id, field)"
+              />
+            </div>
             <el-tag v-if="field.type=='tag'">{{ scope.row.type }}</el-tag>
             <img v-if="field.type=='image'" :src="scope.row.icon" width="100px" height="100px" />
             <div v-if="field.type=='oneFrom'" class="cell">
@@ -143,6 +149,7 @@ const ResourceApi = new Resource(resourceName);
 import TSwitch from './components/TSwitch';
 import TSelect from './components/TSelect';
 import AsyncTags from './components/AsyncTags';
+import TEditText from './components/TEditText';
 
 export default {
   name: 'CategoryList',
@@ -154,6 +161,7 @@ export default {
     TSwitch,
     TSelect,
     AsyncTags,
+    TEditText,
   },
   data() {
     return {
@@ -165,6 +173,7 @@ export default {
         { name: 'title', type: 'multilangtext' },
         // { name: 'description', type: 'multilangtext' },
         { name: 'code', type: 'text' },
+        { name: 'code', type: 'editabletext' },
         // { name: 'expiry_date', type: 'text' },
         { name: 'type', type: 'tag' },
         {
@@ -289,7 +298,7 @@ export default {
           default: '',
           type: 'DateTime',
           label: 'Date',
-        }
+        },
       },
     };
   },
@@ -300,40 +309,11 @@ export default {
   },
   async created() {
     await this.getTableData({});
-    // this.allData = await ResourceApi.list({ limit: -1 });
-
-    // // to fill filter dialog selects
-    // // To get brands
-    // this.filterPannelObj.brands.src = (await axios.get(
-    //   `/api/brands?limit=-1`
-    // )).data.map(({ name, id }) => ({
-    //   label: JSON.parse(name)[this.$store.state.app.language],
-    //   value: id,
-    // }));
-    // // To get tags
-    // this.filterPannelObj.tags.src = (await axios.get(
-    //   `/api/tags?limit=-1`
-    // )).data.map(({ name, id }) => ({
-    //   label: JSON.parse(name)[this.$store.state.app.language],
-    //   value: id,
-    // }));
-    // // To get categories
-    // this.filterPannelObj.cats.src = (await axios.get(
-    //   `/api/categories?limit=-1`
-    // )).data.map(({ name, id }) => ({
-    //   label: JSON.parse(name)[this.$store.state.app.language],
-    //   value: id,
-    // }));
-    // // To get stores
-    // this.filterPannelObj.store_id.src = (await axios.get(
-    //   `/api/stores?limit=-1`
-    // )).data.map(({ name, id }) => ({
-    //   label: JSON.parse(name)[this.$store.state.app.language],
-    //   value: id,
-    // }));
   },
   methods: {
     handleInlineChange(event, id, field) {
+      // alert("in inline change");
+      console.log("TCL: handleInlineChange -> event, id, field", event, id, field)
       const element = this.tableData.filter(data => data.id === id)[0];
       element[field.name] = event;
       this.$set(element, 'edited', true);
