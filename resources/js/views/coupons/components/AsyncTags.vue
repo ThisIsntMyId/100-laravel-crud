@@ -1,18 +1,18 @@
 <template>
   <div>
     <div v-if="isSingle">
-      <el-tag v-if="!errorData">{{isMultiLang ? tagsData[$store.state.app.language] : tagsData}}</el-tag>
-      <el-tag v-else type="danger">{{errorData}}</el-tag>
+      <el-tag v-if="!errorMsg">{{isMultiLang ? tagsData[$store.state.app.language] : tagsData}}</el-tag>
+      <el-tag v-else type="danger">{{errorMsg}}</el-tag>
     </div>
     <div v-else>
-      <div v-if="!errorData">
+      <div v-if="!errorMsg">
         <el-tag
           style="margin: 5px"
           v-for="(item, index) in tagsData"
           :key="`${isMultiLang ? item[$store.state.app.language] : item}+${index}`"
         >{{isMultiLang ? item[$store.state.app.language] : item}}</el-tag>
       </div>
-      <el-tag v-else type="danger">{{errorData}}</el-tag>
+      <el-tag v-else type="danger">{{errorMsg}}</el-tag>
     </div>
   </div>
 </template>
@@ -37,8 +37,8 @@ export default {
       required: true,
     },
     ids: {
-      type: [String, Number],
       required: true,
+      validator: prop => typeof prop === 'string' || typeof prop === 'number' || prop === null
     },
     requiredAttr: {
       type: String,
@@ -48,8 +48,7 @@ export default {
   data() {
     return {
       tagsData: [],
-      errorData: '',
-      // FIXME: For data sometimes when its not available add no data available error
+      errorMsg: '',
     };
   },
   async created() {
@@ -62,7 +61,7 @@ export default {
           this.tagsData = JSON.parse(this.tagsData);
         }
       } catch {
-        this.errorData = 'No Data Available';
+        this.errorMsg = 'No Data Available';
       }
     } else {
       try {
@@ -73,7 +72,7 @@ export default {
               : idata[this.requiredAttr]
         );
       } catch {
-        this.errorData = 'No Data Available';
+        this.errorMsg = 'No Data Available';
       }
     }
   },
