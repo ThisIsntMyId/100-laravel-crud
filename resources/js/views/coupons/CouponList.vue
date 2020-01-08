@@ -85,7 +85,6 @@
             <div
               v-if="field.type=='text'"
               class="cell"
-              
             >{{ scope.row[field.name] | searchFilter(navigation.search) }}</div>
             <div v-if="field.type=='editabletext'" class="cell">
               <t-edit-text
@@ -172,10 +171,7 @@ export default {
     searchFilter(str, query) {
       let searchRegex = query ? new RegExp(query, 'ig') : '';
       if (str && query) {
-        return str.replace(
-          searchRegex,
-          (query) => '<mark>' + query + '</mark>'
-        );
+        return str.replace(searchRegex, query => '<mark>' + query + '</mark>');
       } else {
         return str;
       }
@@ -407,14 +403,24 @@ export default {
       await this.getTableData(this.navigation);
     },
     async handleDeleteClick(id) {
-      ResourceApi.destroy(id)
-        .then(res => {
-          this.$message.success('Delete Successfully');
-          this.getTableData({ page: this.paginationData.current_page });
-        })
-        .error(err => {
-          this.$message.error(err);
-        });
+      this.$confirm(
+        'This will permanently delete the file. Continue?',
+        'Are You Sure',
+        {
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+          type: 'warning',
+        }
+      ).then(() => {
+        ResourceApi.destroy(id)
+          .then(res => {
+            this.$message.success('Delete Successfully');
+            this.getTableData({ page: this.paginationData.current_page });
+          })
+          .error(err => {
+            this.$message.error(err);
+          });
+      });
     },
     // Selection methods
     handleSelectionChange(selection) {
@@ -425,23 +431,33 @@ export default {
     },
     // Multiple Delete
     handleMultipleDelete() {
-      axios
-        .delete(
-          `/api/${this.resourceName}/delete-multiple?ids=${this.selected
-            .map(item => item.id)
-            .join(',')}`
-        )
-        .then(async () => {
-          this.$message.success('Records deleted successfully');
-          await this.getTableData({ page: this.paginationData.current_page });
-          if (this.tableData.length === 0) {
-            await this.getTableData({
-              page: this.paginationData.current_page,
-            });
-          }
-          this.$refs.table.clearSelection();
-        })
-        .catch();
+      this.$confirm(
+        'This will permanently delete the file. Continue?',
+        'Are You Sure',
+        {
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+          type: 'warning',
+        }
+      ).then(() => {
+        axios
+          .delete(
+            `/api/${this.resourceName}/delete-multiple?ids=${this.selected
+              .map(item => item.id)
+              .join(',')}`
+          )
+          .then(async () => {
+            this.$message.success('Records deleted successfully');
+            await this.getTableData({ page: this.paginationData.current_page });
+            if (this.tableData.length === 0) {
+              await this.getTableData({
+                page: this.paginationData.current_page,
+              });
+            }
+            this.$refs.table.clearSelection();
+          })
+          .catch();
+      });
     },
     // Import Events
     handleImportSucces() {
