@@ -80,8 +80,8 @@
             <div
               v-if="field.type=='multilangtext'"
               class="cell"
-              
-            >{{ JSON.parse(scope.row[field.name])[$store.state.app.language] | searchFilter(navigation.search) }}</div>
+              v-html="$options.filters.searchFilter(JSON.parse(scope.row[field.name])[$store.state.app.language], navigation.search)"
+            ></div>
             <div
               v-if="field.type=='text'"
               class="cell"
@@ -174,7 +174,7 @@ export default {
       if (str && query) {
         return str.replace(
           searchRegex,
-          "<span class='highlight'>" + query + '</span>'
+          (query) => '<mark>' + query + '</mark>'
         );
       } else {
         return str;
@@ -190,7 +190,7 @@ export default {
       fieldsToShow: [
         { name: 'title', type: 'multilangtext' },
         { name: 'description', type: 'multilangtext' },
-        { name: 'code', type: 'text' },
+        // { name: 'code', type: 'text' },
         { name: 'code', type: 'editabletext' },
         // { name: 'expiry_date', type: 'text' },
         { name: 'type', type: 'tag' },
@@ -456,8 +456,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.highlight {
-  background-color: yellow;
+<style lang="scss">
+mark {
+  padding: 0;
 }
 </style>
