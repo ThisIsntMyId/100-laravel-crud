@@ -112,7 +112,7 @@ export default {
           return;
         }
         this.options = await this.getOptionsDataDefault(
-          `${this.searchUrl}=${query}`
+          `${this.searchUrl}=${query}`  //TODO try to do this in some other way
         );
       } else {
         this.options = [];

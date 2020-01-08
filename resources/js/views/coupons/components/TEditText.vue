@@ -1,5 +1,5 @@
 <template>
-  <div class="editable" contenteditable="true" @input="bhoooo">{{localdata}}</div>
+  <div class="editable" contenteditable="true" spellcheck="false" @input="contentChanged">{{localdata}}</div>
 </template>
 
 <script>
@@ -20,7 +20,8 @@ export default {
     this.localdata = this.externalValue;
   },
   methods: {
-    bhoooo(e) {
+    // FIXME Change this name
+    contentChanged(e) {
       this.$emit('textchanged', e.target.innerText);
     },
   },
